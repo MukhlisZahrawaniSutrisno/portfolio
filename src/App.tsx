@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { motion, useSpring, useScroll, AnimatePresence } from 'motion/react'
+import { motion, useSpring, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from 'motion/react'
 import { ArrowUpRight, ArrowRight, Menu, X, Plus, Code2, PenTool, MousePointer2 } from 'lucide-react'
 import Work from './components/Work'
 import { profile, showSelectedWork } from './content'
@@ -10,6 +10,7 @@ import ContactLinks from './components/ContactLinks'
 import ThemeSwitcher from './components/ThemeSwitcher'
 import SeasonEffects from './components/SeasonEffects'
 import { useMotionPreference } from './useMotionPreference'
+import './components/navbar.css'
 
 function ContactDialog({ dialogRef }: { dialogRef: React.RefObject<HTMLDialogElement | null> }) {
   const [notice, setNotice] = useState('')
@@ -36,14 +37,18 @@ function ContactDialog({ dialogRef }: { dialogRef: React.RefObject<HTMLDialogEle
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [navScrolled, setNavScrolled] = useState(() => window.scrollY > 8)
   const [expanded, setExpanded] = useState<number | null>(0)
   const dialogRef = useRef<HTMLDialogElement>(null)
   const menuRef = useRef<HTMLButtonElement>(null)
   const reduced = useMotionPreference()
-  const { scrollYProgress } = useScroll()
+  const { scrollY, scrollYProgress } = useScroll()
+  const navOffset = useTransform(scrollY, [0, 100], [0, 12])
+  const navY = useSpring(navOffset, { stiffness: 180, damping: 28 })
+  useMotionValueEvent(scrollY, 'change', latest => setNavScrolled(latest > 8))
   const progress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
   const openContact = () => {
-    if (menuOpen) menuRef.current?.focus()
+    if (menuOpen) menuRef.current?.focus({ preventScroll: true })
     setMenuOpen(false)
     dialogRef.current?.showModal()
   }
@@ -56,6 +61,7 @@ export default function App() {
     <SeasonEffects />
     <motion.div className="scroll-progress" style={{ scaleX: progress }} />
     <a className="skip-link" href="#main">Skip to content</a>
+    <motion.div className="navbar-shell" data-scrolled={navScrolled} style={{ y: reduced ? 0 : navY }}>
     <header className="header container">
       <a className="wordmark" href="#" aria-label="Muza home">Muza</a>
       <nav className="desktop-nav" aria-label="Main navigation">{showSelectedWork && <a href="#work">Work</a>}<a href="#about">About</a><a href="#skills">Skills</a><button onClick={openContact}>Contact <ArrowUpRight size={14} /></button></nav>
@@ -64,6 +70,7 @@ export default function App() {
       <button ref={menuRef} className="menu-toggle" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="mobile-nav" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
     </header>
     <AnimatePresence>{menuOpen && <motion.nav id="mobile-nav" className="mobile-nav" aria-label="Mobile navigation" initial={reduced ? false : { opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: reduced ? 0 : .25 }}>{showSelectedWork && <a href="#work" onClick={() => setMenuOpen(false)}>Work</a>}<a href="#about" onClick={() => setMenuOpen(false)}>About</a><a href="#skills" onClick={() => setMenuOpen(false)}>Skills</a><button onClick={openContact}>Contact <ArrowUpRight /></button></motion.nav>}</AnimatePresence>
+    </motion.div>
     <main id="main">
       <Hero />
       {showSelectedWork && <Work />}

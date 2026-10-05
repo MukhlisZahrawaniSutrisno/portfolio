@@ -20,10 +20,10 @@
 html[data-season] .header {
   position: relative;
   z-index: 4;
-  background: var(--bg);
+  background: transparent;
 }
 
-html[data-season] .mobile-nav { position: relative; z-index: 4; }
+html[data-season] .mobile-nav { z-index: 4; }
 
 .season-effects[data-paused='true'] *,
 .season-effects[data-paused='true'] *::before,
