@@ -24,8 +24,14 @@ export default function ThemeSwitcher() {
       document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#191a18' : '#f8f8f6')
     }
     applyTheme()
-    media.addEventListener('change', applyTheme)
-    return () => media.removeEventListener('change', applyTheme)
+    if (preference !== 'system') return
+    if (typeof media.addEventListener === 'function') {
+      media.addEventListener('change', applyTheme)
+      return () => media.removeEventListener('change', applyTheme)
+    }
+    // Older browsers expose MediaQueryList changes through addListener.
+    media.addListener(applyTheme)
+    return () => media.removeListener(applyTheme)
   }, [preference])
 
   return <div className="theme-switcher" role="group" aria-label="Appearance">

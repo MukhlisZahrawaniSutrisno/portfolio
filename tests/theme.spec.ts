@@ -1,5 +1,63 @@
 import { expect, test } from '@playwright/test';
 
+test('System follows live device changes with the legacy media listener API', async ({ page }) => {
+  await page.addInitScript(() => {
+    const matchMedia = window.matchMedia.bind(window);
+    window.matchMedia = query => {
+      const media = matchMedia(query);
+      if (query !== '(prefers-color-scheme: dark)') return media;
+      return new Proxy(media, {
+        get(target, property) {
+          if (property === 'addEventListener' || property === 'removeEventListener') return undefined;
+          const value = Reflect.get(target, property, target);
+          return typeof value === 'function' ? value.bind(target) : value;
+        },
+      });
+    };
+  });
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.emulateMedia({ colorScheme: 'light' });
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await page.getByRole('button', { name: 'Dark', exact: true }).click();
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.emulateMedia({ colorScheme: 'light' });
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.getByRole('button', { name: 'System', exact: true }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+});
+
+test('live System updates preserve form state and manual themes ignore device changes', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.goto('/');
+  const documentHandle = await page.evaluateHandle(() => document);
+  await page.locator('#contact').getByRole('button', { name: /let.s talk/i }).click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByLabel('Your name').fill('Visitor');
+  for (const scheme of ['dark', 'light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
+    await expect(page.locator('html')).toHaveCSS('color-scheme', scheme);
+    await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', scheme === 'dark' ? '#191a18' : '#f8f8f6');
+    await expect(dialog.getByLabel('Your name')).toHaveValue('Visitor');
+  }
+  expect(await page.evaluate(previous => previous === document, documentHandle)).toBe(true);
+  await page.keyboard.press('Escape');
+  for (const manual of ['Light', 'Dark'] as const) {
+    await page.getByRole('button', { name: manual, exact: true }).click();
+    for (const scheme of ['light', 'dark'] as const) {
+      await page.emulateMedia({ colorScheme: scheme });
+      await expect(page.locator('html')).toHaveAttribute('data-theme', manual.toLowerCase());
+    }
+  }
+  await documentHandle.dispose();
+});
+
 test('appearance buttons support the keyboard without a visible theme label', async ({ page }) => {
   await page.goto('/');
   const controls = page.getByRole('group', { name: 'Appearance', exact: true });
