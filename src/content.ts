@@ -7,7 +7,7 @@ export const showSelectedWork = false
 export const profile = {
   name: 'Muza',
   fullName: 'Mukhlis Zahrawani Sutrisno',
-  location: 'Surabaya | Indonesia',
+  location: 'Surabaya, Indonesia',
   email: 'mukhliszahrawanisutrisno@gmail.com', // Your real email enables the contact form.
   availability: 'Open to collaboration',
   focus: 'Frontend development & UI/UX design',
@@ -23,5 +23,5 @@ export const skillGroups = [
   { name: 'Languages', items: ['TypeScript', 'JavaScript', 'HTML', 'CSS'] },
   { name: 'Frameworks & Libraries', items: ['React', 'Motion', 'Lucide'] },
   { name: 'Databases', items: ['MySQL'] },
-  { name: 'Tools & Infrastructure', items: ['Vite', 'Git', 'GitHub', 'VS Code', 'Figma'] },
+  { name: 'Tools', items: ['Vite', 'Git', 'GitHub', 'VS Code', 'Figma'] },
 ] as const

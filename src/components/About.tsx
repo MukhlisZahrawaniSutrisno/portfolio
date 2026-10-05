@@ -14,7 +14,7 @@ export default function About({ onContact }: { onContact: () => void }) {
         </dl>
       </div>
       <div className="about-copy">
-        <p>I’m {profile.fullName}, a frontend developer and UI/UX designer based in {profile.location}.</p>
+        <p>I’m {profile.fullName}, a frontend developer and UI/UX designer based in {profile.location}. I design in Figma and build in React, working through layouts, prototypes, and interface details.</p>
         <button className="text-link" onClick={onContact}>Contact <ArrowUpRight size={18} /></button>
       </div>
     </div>

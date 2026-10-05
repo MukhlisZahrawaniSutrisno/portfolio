@@ -14,7 +14,7 @@ test('device changes preserve form state and leave the chosen theme unchanged', 
   await page.emulateMedia({ colorScheme: 'light' });
   await page.goto('/');
   const documentHandle = await page.evaluateHandle(() => document);
-  await page.locator('#contact').getByRole('button', { name: 'Start a conversation', exact: true }).click();
+  await page.locator('#contact').getByRole('button', { name: 'Discuss a project', exact: true }).click();
   const dialog = page.getByRole('dialog');
   await dialog.getByLabel('Your name').fill('Visitor');
   for (const scheme of ['dark', 'light', 'dark'] as const) {
@@ -101,7 +101,7 @@ test('themes remain usable at narrow widths with readable forms and no decorativ
       return (Math.max(foreground, background) + .05) / (Math.min(foreground, background) + .05);
     })).toBeGreaterThanOrEqual(4.5);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
-    await page.locator('#contact').getByRole('button', { name: 'Start a conversation', exact: true }).click();
+    await page.locator('#contact').getByRole('button', { name: 'Discuss a project', exact: true }).click();
     const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible();
     await dialog.getByLabel('Your name').fill('Visitor');

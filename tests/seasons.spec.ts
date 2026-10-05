@@ -25,7 +25,7 @@ test('seasons change after 5 seconds without repeating or shifting content', asy
   expect(await page.locator('h1').boundingBox()).toEqual(geometry);
   await page.getByRole('button', { name: 'Dark', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await page.locator('#contact').getByRole('button', { name: 'Start a conversation', exact: true }).click();
+  await page.locator('#contact').getByRole('button', { name: 'Discuss a project', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.keyboard.press('Escape');
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
@@ -117,7 +117,7 @@ test('all seven scenes render their details and remain usable in both themes', a
     await expect(effects).not.toHaveAttribute('data-season', previous);
   }
   expect([...visited].sort()).toEqual(['autumn', 'clear', 'dry', 'rain', 'sakura', 'storm', 'wind']);
-  await page.locator('#contact').getByRole('button', { name: 'Start a conversation', exact: true }).click();
+  await page.locator('#contact').getByRole('button', { name: 'Discuss a project', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
   expect(errors).toEqual([]);
 });

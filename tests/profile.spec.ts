@@ -82,7 +82,7 @@ test('headline reduced motion reveals every letter immediately, including live c
 
 test('skills are grouped without invented database experience', async ({ page }) => {
   const skills = page.locator('#skills');
-  for (const name of ['Languages', 'Frameworks & Libraries', 'Databases', 'Tools & Infrastructure']) {
+  for (const name of ['Languages', 'Frameworks & Libraries', 'Databases', 'Tools']) {
     await expect(skills.getByRole('heading', { name, exact: true })).toBeVisible();
   }
   await expect(skills).toContainText('TypeScript');

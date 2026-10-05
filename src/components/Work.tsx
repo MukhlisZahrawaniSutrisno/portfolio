@@ -3,18 +3,18 @@ import './work.css'
 
 const projects = [
   {
-    id: 'forma', name: 'Forma', subtitle: 'Digital banking, made human.', category: 'Frontend',
+    id: 'forma', name: 'Forma', subtitle: 'Account balances and activity in one dashboard.', category: 'Frontend',
     tags: ['Frontend development', 'Product design'], year: '2025',
-    challenge: 'Financial dashboards often turn everyday decisions into a wall of numbers. This independent concept explores a calmer way to see your money and decide what comes next.',
-    process: 'I mapped the everyday tasks of checking balances, reviewing activity, and tracking savings. Low-fidelity layouts helped establish a clear hierarchy before I explored a restrained olive palette and reusable interface components.',
-    solution: 'A focused dashboard brings the account balance, spending pattern, and recent transactions into one readable view. The interface concept prioritizes clear labels, generous spacing, and responsive layouts.',
+    challenge: 'This banking dashboard concept groups account balances, transaction history, and spending information.',
+    process: 'The layout separates account summaries from transaction details and uses shared components for repeated interface elements.',
+    solution: 'Balances, cash flow, and recent transactions appear in a responsive dashboard with clear labels.',
   },
   {
-    id: 'aesop', name: 'Aesop', subtitle: 'A quieter kind of commerce.', category: 'UI/UX',
+    id: 'aesop', name: 'Aesop', subtitle: 'A product-focused storefront concept.', category: 'UI/UX',
     tags: ['UI/UX design', 'Commerce exploration'], year: '2025',
-    challenge: 'How can an online store preserve the quiet, considered feeling of a physical space? This independent, unofficial Aesop concept explores product discovery without visual clutter.',
-    process: 'I explored editorial layouts, product grouping, and a simplified path from browsing to product detail. Material-inspired colors and a deliberate typographic hierarchy connect the interface to the products.',
-    solution: 'An editorial storefront pairs generous product imagery with concise descriptions and clear navigation. CSS-built product studies demonstrate the visual direction without relying on external assets.',
+    challenge: 'This unofficial Aesop storefront concept explores product browsing and navigation.',
+    process: 'Product groups, headings, and images organize the catalogue and distinguish product information from navigation.',
+    solution: 'Product images, descriptions, and navigation share a consistent layout. The preview uses CSS illustrations.',
   },
 ] as const
 
@@ -44,13 +44,13 @@ function AesopPreview() {
   return (
     <div className="project-aesop" aria-hidden="true">
       <div className="project-shop-nav"><span className="project-shop-logo">Aēsop</span><span>Skin care &nbsp;&nbsp; Body & hand &nbsp;&nbsp; Fragrance</span><span>Bag (0)</span></div>
-      <div className="project-shop-intro"><span>Care for the everyday.</span><small>Considered formulations for the rituals<br/>that make a day your own.</small></div>
+      <div className="project-shop-intro"><span>Hand and body care.</span><small>Hand washes, balms,<br/>and body cleansers.</small></div>
       <div className="project-shop-products">
-        <div className="project-shop-product"><div className="project-bottle project-bottle-one"><div className="project-bottle-pump"/><div className="project-bottle-label"><strong>Aēsop</strong><span>Resurrection<br/>Aromatique<br/>Hand Wash</span><small>500 mL</small></div></div><div className="project-shop-caption"><span>Resurrection Aromatique<br/>Hand Wash</span><small>A gentle, everyday essential</small></div></div>
-        <div className="project-shop-product"><div className="project-tube"><div className="project-tube-label"><strong>Aēsop</strong><span>Resurrection<br/>Aromatique<br/>Hand Balm</span><small>75 mL</small></div><div className="project-tube-cap"/></div><div className="project-shop-caption"><span>Resurrection Aromatique<br/>Hand Balm</span><small>Rich hydration, lasting comfort</small></div></div>
-        <div className="project-shop-product"><div className="project-bottle project-bottle-two"><div className="project-bottle-cap"/><div className="project-bottle-label"><strong>Aēsop</strong><span>Geranium Leaf<br/>Body Cleanser</span><small>500 mL</small></div></div><div className="project-shop-caption"><span>Geranium Leaf<br/>Body Cleanser</span><small>A fresh start for the skin</small></div></div>
+        <div className="project-shop-product"><div className="project-bottle project-bottle-one"><div className="project-bottle-pump"/><div className="project-bottle-label"><strong>Aēsop</strong><span>Resurrection<br/>Aromatique<br/>Hand Wash</span><small>500 mL</small></div></div><div className="project-shop-caption"><span>Resurrection Aromatique<br/>Hand Wash</span><small>Hand wash · 500 mL</small></div></div>
+        <div className="project-shop-product"><div className="project-tube"><div className="project-tube-label"><strong>Aēsop</strong><span>Resurrection<br/>Aromatique<br/>Hand Balm</span><small>75 mL</small></div><div className="project-tube-cap"/></div><div className="project-shop-caption"><span>Resurrection Aromatique<br/>Hand Balm</span><small>Hand balm · 75 mL</small></div></div>
+        <div className="project-shop-product"><div className="project-bottle project-bottle-two"><div className="project-bottle-cap"/><div className="project-bottle-label"><strong>Aēsop</strong><span>Geranium Leaf<br/>Body Cleanser</span><small>500 mL</small></div></div><div className="project-shop-caption"><span>Geranium Leaf<br/>Body Cleanser</span><small>Body cleanser · 500 mL</small></div></div>
       </div>
-      <div className="project-shop-footer"><span>Discover body & hand</span><span>↗</span></div>
+      <div className="project-shop-footer"><span>View hand and body care</span><span>↗</span></div>
     </div>
   )
 }
@@ -72,9 +72,9 @@ export default function Work() {
 
   return (
     <section className="work-section container" id="work" aria-labelledby="work-title">
-      <div className="work-intro"><p>A few things I've put my heart into.</p><span>Selected projects / 2025</span></div>
+      <div className="work-intro"><p>Frontend and UI/UX concepts.</p><span>Selected projects / 2025</span></div>
       <div className="work-heading-row"><h2 id="work-title">Selected work<span className="work-heading-dot">.</span></h2><span className="work-count">(02)</span></div>
-      <div className="work-toolbar"><p>Thoughtful design. Purposeful development.</p><div className="work-filters" role="group" aria-label="Filter projects">{(['All', 'Frontend', 'UI/UX'] as const).map(item => <button type="button" key={item} aria-pressed={filter === item} className={filter === item ? 'work-filter work-filter-active' : 'work-filter'} onClick={() => setFilter(item)}>{item}</button>)}</div></div>
+      <div className="work-toolbar"><p>Browse by frontend development or UI/UX design.</p><div className="work-filters" role="group" aria-label="Filter projects">{(['All', 'Frontend', 'UI/UX'] as const).map(item => <button type="button" key={item} aria-pressed={filter === item} className={filter === item ? 'work-filter work-filter-active' : 'work-filter'} onClick={() => setFilter(item)}>{item}</button>)}</div></div>
       <div className="work-grid">
         {projects.filter(project => filter === 'All' || project.category === filter).map(project => (
           <button className={`project-card project-card-${project.id}`} type="button" key={project.id} aria-label={`View ${project.name} case study, concept project`} onClick={event => { trigger.current = event.currentTarget; setSelected(project) }}>
@@ -86,7 +86,7 @@ export default function Work() {
       </div>
       <p className="work-result-count" aria-live="polite">{filter === 'All' ? '2 projects' : `1 ${filter} project`}</p>
       <dialog className="work-dialog" ref={dialog} onClose={closeCaseStudy} onClick={event => { if (event.target === event.currentTarget) dialog.current?.close() }} aria-labelledby="work-case-title">
-        {selected && <div className="work-dialog-content"><div className="work-dialog-top"><span>Concept project · {selected.year}</span><button type="button" className="work-dialog-close" aria-label="Close case study" onClick={() => dialog.current?.close()} autoFocus>Close <span aria-hidden="true">×</span></button></div><h2 id="work-case-title">{selected.name}</h2><p className="work-dialog-subtitle">{selected.subtitle}</p><div className={`project-preview project-preview-${selected.id} work-dialog-preview`}>{selected.id === 'forma' ? <FormaPreview/> : <AesopPreview/>}</div><div className="work-case-sections">{(['challenge', 'process', 'solution'] as const).map(section => <div key={section}><h3>{section[0].toUpperCase() + section.slice(1)}</h3><p>{selected[section]}</p></div>)}</div><p className="work-case-note">An independent design exploration. No client affiliation or measured business results are implied.</p></div>}
+        {selected && <div className="work-dialog-content"><div className="work-dialog-top"><span>Concept project · {selected.year}</span><button type="button" className="work-dialog-close" aria-label="Close case study" onClick={() => dialog.current?.close()} autoFocus>Close <span aria-hidden="true">×</span></button></div><h2 id="work-case-title">{selected.name}</h2><p className="work-dialog-subtitle">{selected.subtitle}</p><div className={`project-preview project-preview-${selected.id} work-dialog-preview`}>{selected.id === 'forma' ? <FormaPreview/> : <AesopPreview/>}</div><div className="work-case-sections">{(['challenge', 'process', 'solution'] as const).map(section => <div key={section}><h3>{section[0].toUpperCase() + section.slice(1)}</h3><p>{selected[section]}</p></div>)}</div><p className="work-case-note">An unofficial concept with no client affiliation.</p></div>}
       </dialog>
     </section>
   )

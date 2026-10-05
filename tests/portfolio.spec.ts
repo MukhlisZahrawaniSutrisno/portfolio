@@ -98,11 +98,11 @@ test('hidden showcase has no dangling work links and discovery leads to About', 
   await expect(brand).toHaveText('Muza');
   await expect(page.locator('.footer-mark')).toHaveText('Muza');
   await expect(page.getByRole('button', { name: /let.s talk/i })).toHaveCount(0);
-  const discovery = page.getByRole('link', { name: 'Discover more', exact: true });
+  const discovery = page.getByRole('link', { name: 'About me', exact: true });
   await expect(discovery).toHaveAttribute('href', '#about');
   await discovery.click();
   await expect(page).toHaveURL(/#about$/);
-  await expect(page.getByRole('link', { name: 'Scroll to discover', exact: true })).toHaveAttribute('href', '#about');
+  await expect(page.getByRole('link', { name: 'Read about me', exact: true })).toHaveAttribute('href', '#about');
   if (isMobile) {
     await page.getByRole('button', { name: 'Open menu', exact: true }).click();
     await expect(page.locator('#mobile-nav a[href="#work"]')).toHaveCount(0);
@@ -110,14 +110,14 @@ test('hidden showcase has no dangling work links and discovery leads to About', 
 });
 
 test('contact dialog has usable fields and restores focus after Escape', async ({ page }) => {
-  const trigger = page.getByRole('button', { name: 'Start a conversation', exact: true });
+  const trigger = page.getByRole('button', { name: 'Discuss a project', exact: true });
   await trigger.click();
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
   await dialog.getByLabel(/name/i).fill('Portfolio visitor');
   await dialog.getByLabel(/email/i).fill('visitor@example.com');
-  await dialog.getByLabel('What are you working on?').fill('I would like to discuss a design project.');
-  await expect(dialog.getByLabel('What are you working on?')).toHaveValue('I would like to discuss a design project.');
+  await dialog.getByLabel('Project details').fill('I would like to discuss a design project.');
+  await expect(dialog.getByLabel('Project details')).toHaveValue('I would like to discuss a design project.');
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
   await expect(trigger).toBeFocused();
