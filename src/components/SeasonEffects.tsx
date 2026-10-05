@@ -6,7 +6,7 @@ import SeasonDetails from './SeasonDetails'
 import './season-effects.css'
 
 const seasons = ['rain', 'dry', 'sakura', 'storm', 'wind', 'clear', 'autumn'] as const
-const interval = 30_000
+const interval = 5_000
 
 function nextSeason(current?: Season): Season {
   const choices = seasons.filter(season => season !== current)

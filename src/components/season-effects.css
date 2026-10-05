@@ -10,11 +10,12 @@
 .season-field {
   position: absolute;
   inset: 0;
-  animation: season-envelope 30s ease-in-out both;
+  animation: season-envelope 5s ease-in-out both;
 }
 
 .season-effects *, .season-details * { pointer-events: none; }
-.season-details { animation: season-envelope 30s ease-in-out both; }
+.season-details { animation: season-envelope 5s ease-in-out both; }
+.season-details * { animation-duration: 5s; }
 
 html[data-season] .header {
   position: relative;

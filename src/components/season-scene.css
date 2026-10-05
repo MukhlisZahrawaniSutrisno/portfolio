@@ -87,7 +87,7 @@ html[data-theme='dark'] .season-scene {
   width: clamp(90px, 18vw, 245px);
   height: 44%;
   opacity: 0;
-  animation: scene-lightning-reveal 17s ease-in-out infinite;
+  animation: scene-lightning-reveal 5s ease-in-out infinite;
 }
 .scene-storm-light {
   position: absolute;
@@ -97,7 +97,7 @@ html[data-theme='dark'] .season-scene {
   height: 47%;
   background: radial-gradient(ellipse at 80% 20%, var(--scene-lightning), transparent 72%);
   opacity: 0;
-  animation: scene-storm-illumination 17s ease-in-out infinite;
+  animation: scene-storm-illumination 5s ease-in-out infinite;
 }
 
 .scene-blossom-glow,

@@ -36,7 +36,7 @@ Belum ada script lint yang dikonfigurasi; `npm run build` menjalankan pemeriksaa
 
 - Selected Work sementara disembunyikan. Ubah `showSelectedWork` menjadi `true` di `src/content.ts` untuk memulihkan showcase, tautan Work, dan tombol hero; kode proyek serta studi kasus tetap disimpan.
 - Pilih Light atau Dark melalui tombol tema di navbar. Pilihan tersimpan di browser; preferensi System lama kembali ke Light. Token warna ada di `src/theme.css`.
-- Tujuh adegan musim dipilih acak setiap 30 detik tanpa mengulang musim yang sedang aktif. `SeasonEffects.tsx` mengatur rotasi/pause; `SeasonScene.tsx` dan `season-scene.css` menggambar atmosfer berlapis; `SeasonDetails.tsx` dan `season-details.css` menempatkan detail di judul, ilustrasi, dan area skills. Tab tersembunyi menjeda timer serta animasi, dan reduced motion menonaktifkan seluruh efek.
+- Tujuh adegan musim dipilih acak setiap 5 detik tanpa mengulang musim yang sedang aktif. `SeasonEffects.tsx` mengatur rotasi/pause; `SeasonScene.tsx` dan `season-scene.css` menggambar atmosfer berlapis; `SeasonDetails.tsx` dan `season-details.css` menempatkan detail di judul, ilustrasi, dan area skills. Tab tersembunyi menjeda timer serta animasi, dan reduced motion menonaktifkan seluruh efek.
 - Ubah nama, lokasi, fokus, stack, skills, availability, dan kontak di `src/content.ts`.
 - GitHub menggunakan URL repository dari remote origin yang sudah ada. Gmail, LinkedIn, dan Resume ditampilkan sebagai belum tersedia sampai diisi. Tidak ada URL personal yang dibuat-buat.
 - Kategori Databases sengaja kosong karena belum ada data database di proyek. Isi dengan pengalaman yang sebenarnya.

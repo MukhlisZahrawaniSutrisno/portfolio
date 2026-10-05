@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('seasons change after 30 seconds without repeating or shifting content', async ({ page }) => {
+test('seasons change after 5 seconds without repeating or shifting content', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-10-05T00:00:00Z') });
   await page.clock.pauseAt(new Date('2026-10-05T00:01:00Z'));
   await page.goto('/');
@@ -11,13 +11,13 @@ test('seasons change after 30 seconds without repeating or shifting content', as
   await page.evaluate(() => document.querySelectorAll('.headline-letter').forEach(letter => letter.getAnimations().forEach(animation => animation.finish())));
   const geometry = await page.locator('h1').boundingBox();
   const first = await effects.getAttribute('data-season');
-  await page.clock.fastForward(28_000);
+  await page.clock.fastForward(4_000);
   await expect(effects).toHaveAttribute('data-season', first!);
-  await page.clock.fastForward(2_000);
+  await page.clock.fastForward(1_000);
   await expect(effects).not.toHaveAttribute('data-season', first!);
   for (let index = 0; index < 10; index++) {
     const previous = await effects.getAttribute('data-season');
-    await page.clock.fastForward(30_000);
+    await page.clock.fastForward(5_000);
     await expect(effects).not.toHaveAttribute('data-season', previous!);
     await expect(effects).toHaveAttribute('data-season', /^(rain|dry|sakura|storm|wind|clear|autumn)$/);
     expect(await effects.locator('*').count()).toBeLessThan(250);
@@ -66,7 +66,7 @@ test('hidden tabs pause effects and the seasonal timer', async ({ page }) => {
     document.dispatchEvent(new Event('visibilitychange'));
   });
   await expect(effects).toHaveAttribute('data-paused', 'false');
-  await page.clock.fastForward(30_000);
+  await page.clock.fastForward(5_000);
   await expect(effects).not.toHaveAttribute('data-season', initial!);
 });
 
@@ -81,7 +81,8 @@ test('all seven scenes render their details and remain usable in both themes', a
       return seed / 4294967296;
     };
   });
-  await page.clock.install();
+  await page.clock.install({ time: new Date('2026-10-05T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-10-05T00:01:00Z'));
   await page.goto('/');
   const effects = page.locator('.season-effects');
   await expect(effects).toBeAttached();
@@ -103,7 +104,7 @@ test('all seven scenes render their details and remain usable in both themes', a
           document.querySelectorAll('.season-effects, .season-details').forEach(element => {
             element.getAnimations({ subtree: true }).forEach(animation => {
               animation.pause();
-              animation.currentTime = 8_000;
+              animation.currentTime = 2_350;
             });
           });
         });
@@ -112,7 +113,7 @@ test('all seven scenes render their details and remain usable in both themes', a
       }
     }
     const previous = current;
-    await page.clock.fastForward(30_000);
+    await page.clock.fastForward(5_000);
     await expect(effects).not.toHaveAttribute('data-season', previous);
   }
   expect([...visited].sort()).toEqual(['autumn', 'clear', 'dry', 'rain', 'sakura', 'storm', 'wind']);
