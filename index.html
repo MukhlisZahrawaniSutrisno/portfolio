@@ -4,6 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f8f8f6" />
+    <script>
+      // Apply the saved preference before the page renders to avoid a theme flash.
+      (() => {
+        let preference = 'system';
+        try {
+          const saved = localStorage.getItem('muza-theme');
+          if (saved === 'light' || saved === 'dark' || saved === 'system') preference = saved;
+        } catch {}
+        const theme = preference === 'system'
+          ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : preference;
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.themePreference = preference;
+        document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#191a18' : '#f8f8f6';
+      })();
+    </script>
+    <style>html{background:#f8f8f6;color-scheme:light}html[data-theme="dark"]{background:#191a18;color-scheme:dark}</style>
     <meta name="description" content="Mukhlis Zahrawani Sutrisno — frontend developer and UI/UX designer. Thoughtful interfaces, carefully crafted interactions." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Mukhlis Zahrawani Sutrisno — Frontend & UI/UX</title>

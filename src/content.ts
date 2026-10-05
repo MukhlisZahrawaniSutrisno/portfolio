@@ -1,5 +1,8 @@
 import { Contact } from "lucide-react"
 
+// Set to true when projects are ready; restores the showcase and its navigation.
+export const showSelectedWork = false
+
 // Replace these details with your own before publishing.
 export const profile = {
   name: 'Muza',

@@ -1,0 +1,112 @@
+:root {
+  color-scheme: light;
+  --bg: #f8f8f6;
+  --text: #202020;
+  --muted: #747470;
+  --secondary: #565652;
+  --line: #deded9;
+  --surface: #fff;
+  --accent: #707e60;
+  --accent-text: #5f6d51;
+  --accent-wash: #707e6008;
+  --accent-halo: #707e6011;
+  --button-bg: #252525;
+  --button-text: #fff;
+  --button-hover: #444;
+  --soft-button-bg: #f6f6f2;
+  --soft-button-text: #222;
+  --contact-bg: #232323;
+  --contact-text: #f8f8f6;
+  --contact-muted: #b0b0a9;
+  --contact-line: #ffffff38;
+  --contact-hover: #ffffff0c;
+  --contact-accent: #b8c4a1;
+  --ring: #747b70;
+  --ring-strong: #454a43;
+  --ring-soft: #a0a59b;
+  --ring-highlight: #ffffff80;
+  --ring-shadow: #3739360d;
+  --node: #535e49;
+  --node-soft: #92998a;
+  --node-highlight: #ffffff90;
+  --core-light: #aeb5a5;
+  --core-dark: #4b5542;
+  --core-shadow: #3739361a;
+  --sculpture-shadow: #343a2920;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #191a18;
+  --text: #f0f0e9;
+  --muted: #adada3;
+  --secondary: #c7c7be;
+  --line: #3c3e37;
+  --surface: #23251f;
+  --accent: #a9b897;
+  --accent-text: #b9c8a6;
+  --accent-wash: #a9b8970c;
+  --accent-halo: #a9b89720;
+  --button-bg: #e7e8dc;
+  --button-text: #20221c;
+  --button-hover: #cbd3bd;
+  --soft-button-bg: #353a2f;
+  --soft-button-text: #f0f0e9;
+  --contact-bg: #22251e;
+  --contact-text: #f0f0e9;
+  --contact-muted: #b9bdb0;
+  --contact-line: #515747;
+  --contact-hover: #a9b89712;
+  --contact-accent: #b9c8a6;
+  --ring: #a4b095;
+  --ring-strong: #c4cfb5;
+  --ring-soft: #77846a;
+  --ring-highlight: #d9e8c233;
+  --ring-shadow: #090c0870;
+  --node: #c2cdae;
+  --node-soft: #98ad7e;
+  --node-highlight: #efffce75;
+  --core-light: #e1ebd2;
+  --core-dark: #819b67;
+  --core-shadow: #a9b89725;
+  --sculpture-shadow: #00000065;
+}
+
+.theme-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  color: var(--secondary);
+  font-size: 11px;
+}
+
+.theme-switcher select {
+  min-height: 36px;
+  max-width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.theme-switcher select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+@media (max-width: 1100px) {
+  .header .header-availability { display: none; }
+}
+
+@media (max-width: 700px) {
+  .header.container { gap: 12px; }
+  .theme-switcher { margin-left: auto; }
+}
+
+@media (max-width: 380px) {
+  .theme-switcher > span { display: none; }
+}

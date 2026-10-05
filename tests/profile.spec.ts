@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { showSelectedWork } from '../src/content';
 
 test.beforeEach(async ({ page }) => { await page.goto('/'); });
 
@@ -14,6 +15,57 @@ test('full identity and profile details are readable', async ({ page }) => {
   }
 });
 
+test('headline letters enter sequentially without shifting the layout', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.reload();
+  const heading = page.getByRole('heading', { level: 1, name: 'Mukhlis Zahrawani Sutrisno', exact: true });
+  await expect(heading.locator('.headline-letter')).toHaveCount(24);
+  const result = await heading.evaluate(element => {
+    const letters = [...element.querySelectorAll<HTMLElement>('.headline-letter')];
+    const animations = letters.flatMap(letter => letter.getAnimations());
+    const geometry = () => {
+      const headingBox = element.getBoundingClientRect();
+      const descriptionBox = document.querySelector('.hero-description')!.getBoundingClientRect();
+      return [headingBox.x, headingBox.y, headingBox.width, headingBox.height, descriptionBox.y];
+    };
+    animations.forEach(animation => { animation.pause(); animation.currentTime = 0; });
+    const before = geometry();
+    animations.forEach(animation => { animation.currentTime = 350; });
+    const opacity = letters.map(letter => Number(getComputedStyle(letter).opacity));
+    animations.forEach(animation => animation.finish());
+    return { before, after: geometry(), opacity, animationCount: animations.length };
+  });
+  expect(result.animationCount).toBe(24);
+  expect(result.opacity[0]).toBeGreaterThan(result.opacity.at(-1)!);
+  for (let index = 1; index < result.opacity.length; index++) {
+    expect(result.opacity[index]).toBeLessThanOrEqual(result.opacity[index - 1]);
+  }
+  result.before.forEach((value, index) => expect(result.after[index]).toBeCloseTo(value, 1));
+  await expect(heading.locator('.headline-letter').last()).toHaveCSS('opacity', '1');
+});
+
+test('headline reduced motion reveals every letter immediately, including live changes', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.reload();
+  const letters = page.locator('.headline-letter');
+  await expect(letters).toHaveCount(24);
+  await letters.evaluateAll(elements => elements.forEach(element => element.getAnimations().forEach(animation => {
+    animation.pause();
+    animation.currentTime = 200;
+  })));
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect.poll(() => letters.evaluateAll(elements => elements.every(element => {
+    const style = getComputedStyle(element);
+    return style.opacity === '1' && style.transform === 'none' && element.getAnimations().length === 0;
+  }))).toBe(true);
+  await page.reload();
+  await expect(letters).toHaveCount(24);
+  expect(await letters.evaluateAll(elements => elements.every(element => {
+    const style = getComputedStyle(element);
+    return style.opacity === '1' && style.transform === 'none' && element.getAnimations().length === 0;
+  }))).toBe(true);
+});
+
 test('skills are grouped without invented database experience', async ({ page }) => {
   const skills = page.locator('#skills');
   for (const name of ['Languages', 'Frameworks & Libraries', 'Databases', 'Tools & Infrastructure']) {
@@ -24,20 +76,25 @@ test('skills are grouped without invented database experience', async ({ page })
   await expect(skills).toContainText('Vite');
 });
 
-test('contact uses the existing GitHub URL and no fabricated links', async ({ page }) => {
+test('contact links use the configured destinations and labels', async ({ page }) => {
   const contacts = page.getByRole('navigation', { name: 'Contact links' });
-  await expect(contacts.getByRole('link', { name: /GitHub/ })).toHaveAttribute('href', 'https://github.com/MukhlisZahrawaniSutrisno/portfolio');
-  for (const label of ['Gmail', 'LinkedIn', 'Resume']) {
-    await expect(contacts).toContainText(label);
+  const destinations = [
+    { label: 'Gmail', href: 'https://mail.google.com/mail/?view=cm&fs=1&to=mukhliszahrawanisutrisno@gmail.com' },
+    { label: 'GitHub', href: 'https://github.com/MukhlisZahrawaniSutrisno' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/mukhlis-zahrawani-s-149b8843b' },
+    { label: 'WhatsApp', href: 'https://wa.me/62895321686171' },
+  ];
+  for (const { label, href } of destinations) {
+    await expect(contacts.getByRole('link', { name: label, exact: true })).toHaveAttribute('href', href);
   }
   const hrefs = await contacts.locator('a').evaluateAll(links => links.map(link => link.getAttribute('href')));
-  expect(hrefs).toEqual(['https://github.com/MukhlisZahrawaniSutrisno/portfolio']);
+  expect(hrefs).toEqual(destinations.map(({ href }) => href));
 });
 
 test('reduced motion changes stop hero movement without reloading', async ({ page, isMobile }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.reload();
-  await expect(page.locator('.headline-mask').last().locator('span')).toHaveCSS('transform', 'none');
+  await expect(page.locator('.headline-letter').last()).toHaveCSS('transform', 'none');
   const stage = page.locator('.sculpture-stage');
   const sculpture = page.locator('.sculpture');
   await expect.poll(() => stage.evaluate(el => el.getAnimations({ subtree: true }).filter(animation => animation.effect?.getTiming().iterations === Infinity && animation.playState === 'running').length)).toBeGreaterThan(0);
@@ -82,6 +139,7 @@ test('touch pointers leave the hero sculpture untilted', async ({ page }) => {
 });
 
 test('filtering preserves the visible retained project instead of fading the grid', async ({ page }) => {
+  test.skip(!showSelectedWork, 'Selected Work is temporarily hidden.');
   const card = page.getByRole('button', { name: 'View Forma case study, concept project' });
   await card.evaluate(el => el.setAttribute('data-retained', 'yes'));
   await page.locator('#work').getByRole('button', { name: 'Frontend', exact: true }).click();

@@ -1,22 +1,25 @@
 .hero h1{font-size:clamp(48px,6.1vw,88px);font-weight:700;letter-spacing:-.065em;line-height:1.08}
+.headline-word{white-space:nowrap}
+.hero .headline-letter{display:inline-block;animation:letter-rise .55s cubic-bezier(.22,1,.36,1) backwards}
+@keyframes letter-rise{from{opacity:0;transform:translateY(.2em)}to{opacity:1;transform:none}}
 .hero-occupation{display:block;line-height:1.7}
 .hero .sculpture{width:clamp(210px,23vw,300px);height:auto;aspect-ratio:1;transform-style:preserve-3d}
 .orbital-motion{position:absolute;inset:0;transform-style:preserve-3d;animation:orbit-turn 36s linear infinite}
-.orbit-ring{position:absolute;inset:0;border:2px solid #747b70;border-radius:50%;box-shadow:inset 0 0 0 1px #ffffff80,0 0 0 1px #3739360d;transform-style:preserve-3d}
+.orbit-ring{position:absolute;inset:0;border:2px solid var(--ring);border-radius:50%;box-shadow:inset 0 0 0 1px var(--ring-highlight),0 0 0 1px var(--ring-shadow);transform-style:preserve-3d}
 .orbit-ring-one{transform:rotateZ(-28deg) rotateX(64deg)}
-.orbit-ring-two{transform:rotateZ(36deg) rotateY(62deg);border-color:#454a43}
-.orbit-ring-three{inset:12%;transform:rotateZ(-20deg) rotateY(-38deg) rotateX(24deg);border-color:#a0a59b}
-.orbit-node{position:absolute;left:50%;top:-5px;width:8px;height:8px;transform:translateX(-50%);border-radius:50%;background:#535e49;box-shadow:inset 1px 1px 2px #ffffff90}
-.orbit-ring-two .orbit-node{top:auto;bottom:-5px;background:#92998a}
-.orbit-core{position:absolute;left:50%;top:50%;width:16px;height:16px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 30% 25%,#aeb5a5,#4b5542 70%);box-shadow:0 2px 8px #3739361a}
-.hero .sculpture-shadow{width:180px;height:22px;bottom:40px;background:radial-gradient(ellipse,#343a2920,transparent 70%);filter:none;transform:none}
+.orbit-ring-two{transform:rotateZ(36deg) rotateY(62deg);border-color:var(--ring-strong)}
+.orbit-ring-three{inset:12%;transform:rotateZ(-20deg) rotateY(-38deg) rotateX(24deg);border-color:var(--ring-soft)}
+.orbit-node{position:absolute;left:50%;top:-5px;width:8px;height:8px;transform:translateX(-50%);border-radius:50%;background:var(--node);box-shadow:inset 1px 1px 2px var(--node-highlight)}
+.orbit-ring-two .orbit-node{top:auto;bottom:-5px;background:var(--node-soft)}
+.orbit-core{position:absolute;left:50%;top:50%;width:16px;height:16px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 30% 25%,var(--core-light),var(--core-dark) 70%);box-shadow:0 2px 8px var(--core-shadow)}
+.hero .sculpture-shadow{width:180px;height:22px;bottom:40px;background:radial-gradient(ellipse,var(--sculpture-shadow),transparent 70%);filter:none;transform:none}
 @keyframes orbit-turn{from{transform:rotateZ(-12deg) rotateY(0deg)}to{transform:rotateZ(-12deg) rotateY(360deg)}}
-.about-facts{display:grid;gap:17px;margin:38px 0 0;padding-top:24px;border-top:1px solid #deded9;max-width:390px}
+.about-facts{display:grid;gap:17px;margin:38px 0 0;padding-top:24px;border-top:1px solid var(--line);max-width:390px}
 .about-facts>div{display:grid;grid-template-columns:70px minmax(0,1fr);gap:16px;align-items:baseline}
-.about-facts dt{font-size:10px;line-height:1.8;color:#747470}
-.about-facts dd{margin:0;font-size:12px;line-height:1.8;color:#202020}
+.about-facts dt{font-size:10px;line-height:1.8;color:var(--muted)}
+.about-facts dd{margin:0;font-size:12px;line-height:1.8;color:var(--text)}
 .about-stack{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0;padding:0}
-.about-stack li{font-size:10px;padding:3px 9px;border:1px solid #deded9;border-radius:3px;color:#5f6d51;background:#707e6008}
+.about-stack li{font-size:10px;padding:3px 9px;border:1px solid var(--line);border-radius:3px;color:var(--accent-text);background:var(--accent-wash)}
 @media(max-width:700px){.hero h1{font-size:clamp(42px,10.8vw,76px)}.hero-occupation{max-width:300px}.hero .sculpture-shadow{bottom:24px}.about-facts{margin-top:29px;padding-top:20px;max-width:none;gap:14px}.about-facts>div{grid-template-columns:62px minmax(0,1fr);gap:13px}}
 @media(hover:none),(pointer:coarse){.hero .object-hint{display:none}}
-@media(prefers-reduced-motion:reduce){.orbital-motion{animation:none;transform:rotateZ(-12deg)}}
+@media(prefers-reduced-motion:reduce){.hero .headline-letter{animation:none}.orbital-motion{animation:none;transform:rotateZ(-12deg)}}

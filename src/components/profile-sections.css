@@ -9,12 +9,12 @@
   justify-content: space-between;
   gap: 24px;
   padding-top: 30px;
-  border-top: 1px solid var(--line, #deded9);
+  border-top: 1px solid var(--line);
 }
 
 .skills-section-heading p {
   margin: 0;
-  color: #64645f;
+  color: var(--secondary);
   font-size: 13px;
   line-height: 1.7;
 }
@@ -51,9 +51,9 @@
 .skills-group li {
   max-width: 100%;
   padding: 7px 11px;
-  border: 1px solid var(--line, #deded9);
+  border: 1px solid var(--line);
   border-radius: 4px;
-  color: #565652;
+  color: var(--secondary);
   font-size: 12px;
   line-height: 1.5;
   overflow-wrap: anywhere;
@@ -61,7 +61,7 @@
 
 .skills-empty {
   margin: 0;
-  color: #64645f;
+  color: var(--secondary);
   font-size: 12px;
   line-height: 1.7;
 }
@@ -90,7 +90,7 @@
   gap: 12px;
   min-height: 72px;
   padding: 16px;
-  border: 1px solid #ffffff38;
+  border: 1px solid var(--contact-line);
   border-radius: 4px;
   font-size: 13px;
   line-height: 1.5;
@@ -101,12 +101,12 @@
 }
 
 .contact-links a:hover {
-  background-color: #ffffff0c;
+  background-color: var(--contact-hover);
   transform: translateY(-2px);
 }
 
 .contact-links a:focus-visible {
-  outline: 2px solid #f8f8f6;
+  outline: 2px solid var(--contact-text);
   outline-offset: 4px;
 }
 
@@ -124,7 +124,7 @@
 }
 
 .contact-links-unavailable {
-  color: #b0b0a9;
+  color: var(--contact-muted);
 }
 
 .contact-links small {

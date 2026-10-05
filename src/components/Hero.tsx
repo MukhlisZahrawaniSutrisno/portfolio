@@ -1,11 +1,15 @@
 import { useEffect, useRef } from 'react'
 import { motion, useInView, useMotionValue, useSpring } from 'motion/react'
 import { ArrowDown, MousePointer2 } from 'lucide-react'
-import { profile } from '../content'
+import { profile, showSelectedWork } from '../content'
 import { useMotionPreference } from '../useMotionPreference'
 import './hero-about.css'
 
 const ease = [.22, 1, .36, 1] as const
+const nameLines = profile.fullName.split(' ').map((word, index, words) => ({
+  word,
+  offset: words.slice(0, index).join(' ').length + (index > 0 ? 1 : 0),
+}))
 
 function OrbitalAnimation() {
   const reduced = useMotionPreference()
@@ -60,7 +64,6 @@ function OrbitalAnimation() {
         <div className="orbit-core" />
       </div>
     </motion.div>
-    <span className="object-coordinate">Form in motion</span>
     <span className="object-hint"><MousePointer2 size={12} /> Move to explore</span>
   </div>
 }
@@ -72,15 +75,15 @@ export default function Hero() {
       <motion.p className="hero-intro" initial={reduced ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduced ? 0 : .45, ease }}>
         <span className="hero-occupation">Independent frontend developer & UI/UX designer</span>
       </motion.p>
-      <h1>{profile.fullName.split(' ').map((line, index) => <span className="headline-mask" key={line}>
-        <motion.span initial={reduced ? false : { y: '105%', opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: reduced ? 0 : .7, delay: reduced ? 0 : .08 + index * .1, ease }}>{line}{index < profile.fullName.split(' ').length - 1 ? ' ' : ''}</motion.span>
+      <h1 aria-label={profile.fullName}>{nameLines.map(({ word, offset }, lineIndex) => <span className="headline-mask" aria-hidden="true" key={word}>
+        <span className="headline-word">{Array.from(word).map((letter, index) => <span className="headline-letter" key={index} style={{ animationDelay: `${.08 + (offset + index) * .024}s` }}>{letter}</span>)}{lineIndex < nameLines.length - 1 ? ' ' : ''}</span>
       </span>)}</h1>
       <motion.div initial={reduced ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: reduced ? 0 : .32, duration: reduced ? 0 : .45, ease }}>
-        <p className="hero-description">I connect the dots between design and development.<br className="desktop-break" /> Crafting digital experiences that look good,<br className="desktop-break" /> feel right, and work beautifully.</p>
-        <a className="button dark" href="#work">Explore my work <ArrowDown size={16} /></a>
+        <p className="hero-description">Building responsive websites and designing user interfaces.</p>
+        <a className="button dark" href={showSelectedWork ? '#work' : '#about'}>{showSelectedWork ? 'Explore my work' : 'Discover more'} <ArrowDown size={16} /></a>
       </motion.div>
     </div>
-    <div className="hero-art"><OrbitalAnimation /><div className="art-caption"><span>Where form meets function.</span><span>© {new Date().getFullYear()}</span></div></div>
-    <div className="hero-bottom"><span>Based in {profile.location}, working everywhere.</span><a href="#work">Scroll to discover <ArrowDown size={12} /></a></div>
+    <div className="hero-art"><OrbitalAnimation /></div>
+    <div className="hero-bottom"><span>Based in {profile.location}</span><a href={showSelectedWork ? '#work' : '#about'}>Scroll to discover <ArrowDown size={12} /></a></div>
   </section>
 }

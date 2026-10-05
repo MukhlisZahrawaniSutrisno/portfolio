@@ -34,6 +34,8 @@ Belum ada script lint yang dikonfigurasi; `npm run build` menjalankan pemeriksaa
 
 ## Personalisasi
 
+- Selected Work sementara disembunyikan. Ubah `showSelectedWork` menjadi `true` di `src/content.ts` untuk memulihkan showcase, tautan Work, dan tombol hero; kode proyek serta studi kasus tetap disimpan.
+- Pilih Light, Dark, atau System melalui pemilih tema di navbar. Pilihan tersimpan di browser; System mengikuti perubahan tema perangkat. Token warna ada di `src/theme.css`.
 - Ubah nama, lokasi, fokus, stack, skills, availability, dan kontak di `src/content.ts`.
 - GitHub menggunakan URL repository dari remote origin yang sudah ada. Gmail, LinkedIn, dan Resume ditampilkan sebagai belum tersedia sampai diisi. Tidak ada URL personal yang dibuat-buat.
 - Kategori Databases sengaja kosong karena belum ada data database di proyek. Isi dengan pengalaman yang sebenarnya.
