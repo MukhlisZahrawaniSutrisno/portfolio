@@ -105,51 +105,116 @@ test('contact links use the configured destinations and labels', async ({ page }
   expect(hrefs).toEqual(destinations.map(({ href }) => href));
 });
 
-test('reduced motion changes stop hero movement without reloading', async ({ page, isMobile }) => {
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.reload();
-  await expect(page.locator('.headline-letter').last()).toHaveCSS('opacity', '1');
-  const stage = page.locator('.sculpture-stage');
-  const sculpture = page.locator('.sculpture');
-  await expect.poll(() => stage.evaluate(el => el.getAnimations({ subtree: true }).filter(animation => animation.effect?.getTiming().iterations === Infinity && animation.playState === 'running').length)).toBeGreaterThan(0);
-  const box = await stage.boundingBox();
-  if (!box) throw new Error('Sculpture stage missing');
-  if (isMobile) {
-    await stage.dispatchEvent('pointermove', { pointerType: 'touch', clientX: box.x + box.width * .8, clientY: box.y + box.height * .2 });
-    await expect.poll(() => page.locator('.sculpture').evaluate(el => el.style.transform)).not.toMatch(/rotate[XY]\([^)]*[1-9]/);
-  } else {
-    await page.mouse.move(0, 0);
-    await page.mouse.move(box.x + box.width * .8, box.y + box.height * .2);
-    await expect.poll(() => sculpture.evaluate(el => el.style.transform)).toMatch(/rotate[XY]\([^)]*[1-9]/);
-    await page.mouse.move(0, 0);
-    await expect.poll(() => sculpture.evaluate(el => el.style.transform)).not.toMatch(/rotate[XY]\([^)]*[1-9]/);
+test.describe('Surabaya analog clock', () => {
+  test.use({ timezoneId: 'America/New_York' });
+
+  async function handAngles(page: import('@playwright/test').Page) {
+    return page.locator('.analog-clock [data-hand]').evaluateAll(elements => Object.fromEntries(elements.map(element => [
+      element.getAttribute('data-hand'), Number(element.getAttribute('transform')!.match(/rotate\(([-\d.]+)/)![1]),
+    ])));
   }
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  await stage.dispatchEvent('pointermove', { pointerType: 'mouse', clientX: box.x, clientY: box.y });
-  await expect.poll(() => page.locator('.sculpture').evaluate(el => el.style.transform)).not.toMatch(/rotate[XY]\([^)]*[1-9]/);
-  await expect.poll(() => stage.evaluate(el => el.getAnimations({ subtree: true }).filter(animation => animation.effect?.getTiming().iterations === Infinity && animation.playState === 'running').length)).toBe(0);
-});
 
-test('hero ambient motion pauses offscreen and resumes on return', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  const orbitalMotion = page.locator('.orbital-motion');
-  await expect(orbitalMotion).toHaveCSS('animation-play-state', 'running');
-  await page.locator('#contact').scrollIntoViewIfNeeded();
-  await expect(orbitalMotion).toHaveCSS('animation-play-state', 'paused');
-  await page.locator('.sculpture-stage').scrollIntoViewIfNeeded();
-  await expect(orbitalMotion).toHaveCSS('animation-play-state', 'running');
-});
+  async function expectCurrentTime(page: import('@playwright/test').Page, wholeSeconds = false) {
+    await expect.poll(async () => {
+      const now = await page.evaluate(() => Date.now());
+      const time = new Date((wholeSeconds ? Math.floor(now / 1000) * 1000 : now) + 7 * 60 * 60 * 1000);
+      const seconds = time.getUTCSeconds() + time.getUTCMilliseconds() / 1000;
+      const minutes = time.getUTCMinutes() + seconds / 60;
+      const expected = { hour: (time.getUTCHours() % 12 + minutes / 60) * 30, minute: minutes * 6, second: seconds * 6 };
+      const actual = await handAngles(page);
+      return Math.max(...Object.entries(expected).map(([hand, angle]) => {
+        const difference = Math.abs(actual[hand] - angle);
+        return Math.min(difference, 360 - difference);
+      }));
+    }).toBeLessThan(.15);
+  }
 
-test('touch pointers leave the hero sculpture untilted', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  const stage = page.locator('.sculpture-stage');
-  const box = await stage.boundingBox();
-  if (!box) throw new Error('Sculpture stage missing');
-  const pointer = { pointerType: 'touch', clientX: box.x + box.width * .8, clientY: box.y + box.height * .2 };
-  await stage.dispatchEvent('pointerenter', pointer);
-  await stage.dispatchEvent('pointermove', pointer);
-  await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
-  await expect.poll(() => page.locator('.sculpture').evaluate(el => el.style.transform)).not.toMatch(/rotate[XY]\([^)]*[1-9]/);
+  async function prepareClock(page: import('@playwright/test').Page, reduced = false) {
+    await page.emulateMedia({ reducedMotion: reduced ? 'reduce' : 'no-preference' });
+    await page.clock.install({ time: new Date('2026-10-05T16:59:00Z') });
+    await page.clock.pauseAt(new Date('2026-10-05T16:59:59.500Z'));
+    await page.reload();
+    await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
+    await page.locator('.sculpture-stage').evaluate(element => element.scrollIntoView({ behavior: 'instant', block: 'center' }));
+    await expect(page.locator('.analog-clock')).toBeVisible();
+  }
+
+  test('Roman dial keeps Surabaya time across midnight and moves between seconds', async ({ page }) => {
+    await prepareClock(page);
+    const clock = page.locator('.analog-clock');
+    await expect(clock).toHaveAttribute('role', 'img');
+    await expect(clock).toHaveAttribute('aria-label', /Surabaya/i);
+    expect(await page.evaluate(() => Intl.DateTimeFormat().resolvedOptions().timeZone)).toBe('America/New_York');
+    const numerals = await clock.locator('[data-clock-numeral]').allTextContents();
+    expect(numerals).toHaveLength(12);
+    expect([...numerals].sort()).toEqual(['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'].sort());
+    await expect(page.locator('.clock-label')).toHaveText('SURABAYA · WIB');
+    await page.clock.runFor(32);
+    await expectCurrentTime(page);
+    const before = await handAngles(page);
+    expect(before.hour).toBeGreaterThan(359);
+    expect(before.second).toBeGreaterThan(357);
+    await page.clock.runFor(200);
+    await expectCurrentTime(page);
+    const fractional = await handAngles(page);
+    expect(fractional.second - before.second).toBeGreaterThan(.8);
+    expect(fractional.second - before.second).toBeLessThan(1.4);
+    await page.clock.runFor(800);
+    await expectCurrentTime(page);
+    const after = await handAngles(page);
+    expect(after.hour).toBeLessThan(1);
+    expect(after.minute).toBeLessThan(1);
+    expect(after.second).toBeLessThan(6);
+  });
+
+  test('live reduced motion uses whole-second updates while keeping the time correct', async ({ page }) => {
+    await prepareClock(page, true);
+    await expectCurrentTime(page, true);
+    const before = await handAngles(page);
+    await page.clock.runFor(200);
+    expect(await handAngles(page)).toEqual(before);
+    await page.clock.runFor(1000);
+    await expectCurrentTime(page, true);
+    expect(await handAngles(page)).not.toEqual(before);
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.clock.runFor(32);
+    await expectCurrentTime(page);
+    const smooth = await handAngles(page);
+    await page.clock.runFor(200);
+    expect((await handAngles(page)).second).toBeGreaterThan(smooth.second);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.clock.runFor(32);
+    await expectCurrentTime(page, true);
+    expect((await handAngles(page)).second % 6).toBeCloseTo(0, 6);
+  });
+
+  test('offscreen and hidden clocks pause and resynchronize on return', async ({ page }) => {
+    await prepareClock(page);
+    await page.clock.runFor(32);
+    await page.locator('#contact').evaluate(element => element.scrollIntoView({ behavior: 'instant' }));
+    await expect(page.locator('.sculpture-stage')).not.toBeInViewport();
+    await page.clock.runFor(32);
+    const offscreen = await handAngles(page);
+    await page.clock.runFor(2500);
+    expect(await handAngles(page)).toEqual(offscreen);
+    await page.locator('.sculpture-stage').evaluate(element => element.scrollIntoView({ behavior: 'instant', block: 'center' }));
+    await expect(page.locator('.sculpture-stage')).toBeInViewport();
+    await page.clock.runFor(32);
+    await expectCurrentTime(page);
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    const hidden = await handAngles(page);
+    await page.clock.runFor(2500);
+    expect(await handAngles(page)).toEqual(hidden);
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', { configurable: true, get: () => false });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await page.clock.runFor(32);
+    await expectCurrentTime(page);
+  });
 });
 
 test('filtering preserves the visible retained project instead of fading the grid', async ({ page }) => {

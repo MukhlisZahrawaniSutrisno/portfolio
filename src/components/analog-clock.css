@@ -1,0 +1,15 @@
+.hero .clock-stage { perspective: none; }
+.hero .sculpture.clock-body { transform-style: flat; pointer-events: none; }
+.analog-clock { display: block; width: 100%; height: 100%; overflow: visible; }
+.clock-case { fill: var(--bg); stroke: var(--ring); stroke-width: 1.2; }
+.clock-inner-rim { fill: none; stroke: var(--line); stroke-width: .7; }
+.clock-tick { stroke: var(--muted); stroke-width: .6; opacity: .5; }
+.clock-hour-tick { stroke: var(--ring-strong); stroke-width: 1; opacity: .9; }
+.analog-clock text { font-family: Georgia, 'Times New Roman', serif; font-size: 18px; font-weight: 400; fill: var(--text); }
+.clock-hour-hand { fill: var(--text); }
+.clock-minute-hand { fill: var(--secondary); }
+.clock-second-hand { stroke: var(--accent); stroke-width: 1; stroke-linecap: round; }
+.clock-counterweight { fill: var(--bg); stroke: var(--accent); stroke-width: 1; }
+.clock-pin { fill: var(--text); }
+.clock-pin-core { fill: var(--bg); }
+.clock-label { position: absolute; bottom: 6px; left: 0; right: 0; text-align: center; font-size: 9px; font-weight: 400; letter-spacing: .16em; color: var(--muted); }
