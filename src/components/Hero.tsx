@@ -76,7 +76,7 @@ export default function Hero() {
         <span className="hero-occupation">Independent frontend developer & UI/UX designer</span>
       </motion.p>
       <h1 aria-label={profile.fullName}>{nameLines.map(({ word, offset }, lineIndex) => <span className="headline-mask" aria-hidden="true" key={word}>
-        <span className="headline-word">{Array.from(word).map((letter, index) => <span className="headline-letter" key={index} style={{ animationDelay: `${.08 + (offset + index) * .024}s` }}>{letter}</span>)}{lineIndex < nameLines.length - 1 ? ' ' : ''}</span>
+        <span className="headline-word">{Array.from(word).map((letter, index) => <span className="headline-letter" key={index} style={{ animationDelay: `${.08 + (offset + index) * .024}s, ${.63 + (offset + index) * .024}s` }}>{letter}</span>)}{lineIndex < nameLines.length - 1 ? ' ' : ''}</span>
       </span>)}</h1>
       <motion.div initial={reduced ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: reduced ? 0 : .32, duration: reduced ? 0 : .45, ease }}>
         <p className="hero-description">Building responsive websites and designing user interfaces.</p>

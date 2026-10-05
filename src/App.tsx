@@ -57,7 +57,7 @@ export default function App() {
     <motion.div className="scroll-progress" style={{ scaleX: progress }} />
     <a className="skip-link" href="#main">Skip to content</a>
     <header className="header container">
-      <a className="wordmark" href="#" aria-label="Muza home">Muza<span className="wordmark-star">✳</span></a>
+      <a className="wordmark" href="#" aria-label="Muza home">Muza</a>
       <nav className="desktop-nav" aria-label="Main navigation">{showSelectedWork && <a href="#work">Work</a>}<a href="#about">About</a><a href="#skills">Skills</a><button onClick={openContact}>Contact <ArrowUpRight size={14} /></button></nav>
       <div className="header-availability"><span className="status-dot" /> {profile.availability}</div>
       <ThemeSwitcher />
@@ -70,7 +70,7 @@ export default function App() {
       <About onContact={openContact} />
       <Skills />
       <section className="services container"><div className="services-heading"><h2>Services</h2></div><div className="service-list">{services.map((s, i) => <article className={`service ${expanded === i ? 'expanded' : ''}`} key={s.title}><button className="service-trigger" aria-expanded={expanded === i} aria-controls={`service-${i}`} onClick={() => setExpanded(expanded === i ? null : i)}><s.icon size={20} /><span>{s.title}</span><Plus className="service-plus" size={20} /></button><AnimatePresence initial={false}>{expanded === i && <motion.div id={`service-${i}`} initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: reduced ? 0 : .3 }} className="service-content"><p>{s.text}</p><span>{s.tags}</span></motion.div>}</AnimatePresence></article>)}</div></section>
-      <section id="contact" className="contact"><div className="container"><div className="contact-top"><span><span className="status-dot" /> {profile.availability}</span></div><button className="contact-cta" onClick={openContact}><span>Let’s talk</span><ArrowUpRight strokeWidth={1} /></button><div className="contact-bottom"><button className="button light" onClick={openContact}>Start a conversation <ArrowRight size={17} /></button></div><ContactLinks /><footer><a className="footer-mark" href="#">mukhlis✳</a><a href="#">Back to top <ArrowUpRight size={12} /></a></footer></div></section>
+      <section id="contact" className="contact"><div className="container"><div className="contact-top"><span><span className="status-dot" /> {profile.availability}</span></div><div className="contact-bottom"><button className="button light" onClick={openContact}>Start a conversation <ArrowRight size={17} /></button></div><ContactLinks /><footer><a className="footer-mark" href="#">Muza</a><a href="#">Back to top <ArrowUpRight size={12} /></a></footer></div></section>
     </main>
     <ContactDialog dialogRef={dialogRef} />
   </>

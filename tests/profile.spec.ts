@@ -22,7 +22,7 @@ test('headline letters enter sequentially without shifting the layout', async ({
   await expect(heading.locator('.headline-letter')).toHaveCount(24);
   const result = await heading.evaluate(element => {
     const letters = [...element.querySelectorAll<HTMLElement>('.headline-letter')];
-    const animations = letters.flatMap(letter => letter.getAnimations());
+    const animations = letters.flatMap(letter => letter.getAnimations()).filter(animation => animation.effect?.getTiming().iterations !== Infinity);
     const geometry = () => {
       const headingBox = element.getBoundingClientRect();
       const descriptionBox = document.querySelector('.hero-description')!.getBoundingClientRect();
@@ -42,6 +42,20 @@ test('headline letters enter sequentially without shifting the layout', async ({
   }
   result.before.forEach((value, index) => expect(result.after[index]).toBeCloseTo(value, 1));
   await expect(heading.locator('.headline-letter').last()).toHaveCSS('opacity', '1');
+  const loop = await heading.evaluate(element => {
+    const letter = element.querySelector<HTMLElement>('.headline-letter')!;
+    const animation = letter.getAnimations().find(animation => animation.effect?.getTiming().iterations === Infinity)!;
+    const timing = animation.effect!.getTiming();
+    animation.pause();
+    animation.currentTime = Number(timing.delay);
+    const before = element.getBoundingClientRect().toJSON();
+    const start = letter.getBoundingClientRect().y;
+    animation.currentTime = Number(timing.delay) + 500;
+    return { duration: timing.duration, before, after: element.getBoundingClientRect().toJSON(), start, middle: letter.getBoundingClientRect().y };
+  });
+  expect(loop.duration).toBe(1000);
+  expect(loop.middle).toBeLessThan(loop.start);
+  expect(loop.after).toEqual(loop.before);
 });
 
 test('headline reduced motion reveals every letter immediately, including live changes', async ({ page }) => {
@@ -94,7 +108,7 @@ test('contact links use the configured destinations and labels', async ({ page }
 test('reduced motion changes stop hero movement without reloading', async ({ page, isMobile }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.reload();
-  await expect(page.locator('.headline-letter').last()).toHaveCSS('transform', 'none');
+  await expect(page.locator('.headline-letter').last()).toHaveCSS('opacity', '1');
   const stage = page.locator('.sculpture-stage');
   const sculpture = page.locator('.sculpture');
   await expect.poll(() => stage.evaluate(el => el.getAnimations({ subtree: true }).filter(animation => animation.effect?.getTiming().iterations === Infinity && animation.playState === 'running').length)).toBeGreaterThan(0);

@@ -8,7 +8,7 @@ test('seasons change after 5 seconds without repeating or shifting content', asy
   await expect(effects).toHaveAttribute('data-season', /rain|dry|sakura|storm|wind|clear|autumn/);
   await expect(effects).toHaveAttribute('aria-hidden', 'true');
   await expect(effects).toHaveCSS('pointer-events', 'none');
-  await page.evaluate(() => document.querySelectorAll('.headline-letter').forEach(letter => letter.getAnimations().forEach(animation => animation.finish())));
+  await page.evaluate(() => document.querySelectorAll('.headline-letter').forEach(letter => letter.getAnimations().forEach(animation => { if (animation.effect?.getTiming().iterations !== Infinity) animation.finish(); })));
   const geometry = await page.locator('h1').boundingBox();
   const first = await effects.getAttribute('data-season');
   await page.clock.fastForward(4_000);
@@ -25,7 +25,7 @@ test('seasons change after 5 seconds without repeating or shifting content', asy
   expect(await page.locator('h1').boundingBox()).toEqual(geometry);
   await page.getByRole('button', { name: 'Dark', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await page.locator('#contact').getByRole('button', { name: /let.s talk/i }).click();
+  await page.locator('#contact').getByRole('button', { name: 'Start a conversation', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.keyboard.press('Escape');
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
@@ -87,7 +87,7 @@ test('all seven scenes render their details and remain usable in both themes', a
   const effects = page.locator('.season-effects');
   await expect(effects).toBeAttached();
   await page.evaluate(() => document.fonts.ready);
-  await page.evaluate(() => document.querySelectorAll('.headline-letter').forEach(letter => letter.getAnimations().forEach(animation => animation.finish())));
+  await page.evaluate(() => document.querySelectorAll('.headline-letter').forEach(letter => letter.getAnimations().forEach(animation => { if (animation.effect?.getTiming().iterations !== Infinity) animation.finish(); })));
   const visited = new Set<string>();
   for (let turn = 0; turn < 60 && visited.size < 7; turn++) {
     const current = (await effects.getAttribute('data-season'))!;
@@ -117,7 +117,7 @@ test('all seven scenes render their details and remain usable in both themes', a
     await expect(effects).not.toHaveAttribute('data-season', previous);
   }
   expect([...visited].sort()).toEqual(['autumn', 'clear', 'dry', 'rain', 'sakura', 'storm', 'wind']);
-  await page.locator('#contact').getByRole('button', { name: /let.s talk/i }).click();
+  await page.locator('#contact').getByRole('button', { name: 'Start a conversation', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
   expect(errors).toEqual([]);
 });

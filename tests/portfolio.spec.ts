@@ -28,7 +28,7 @@ test('portfolio loads cleanly and stays within the viewport', async ({ page }) =
   }
   expect(errors).toEqual([]);
   await page.evaluate(() => { (document.activeElement as HTMLElement)?.blur(); window.scrollTo({ top: 0, behavior: 'instant' }); });
-  await expect(page.locator('.headline-letter').last()).toHaveCSS('transform', 'none');
+  await expect(page.locator('.headline-letter').last()).toHaveCSS('opacity', '1');
   await page.screenshot({ path: `test-results/portfolio-${test.info().project.name}.png`, fullPage: true });
 });
 
@@ -95,6 +95,9 @@ test('hidden showcase has no dangling work links and discovery leads to About', 
   const brand = page.getByRole('link', { name: 'Muza home', exact: true });
   await expect(brand).toContainText('Muza');
   await expect(brand).toHaveAttribute('href', '#');
+  await expect(brand).toHaveText('Muza');
+  await expect(page.locator('.footer-mark')).toHaveText('Muza');
+  await expect(page.getByRole('button', { name: /let.s talk/i })).toHaveCount(0);
   const discovery = page.getByRole('link', { name: 'Discover more', exact: true });
   await expect(discovery).toHaveAttribute('href', '#about');
   await discovery.click();
@@ -107,7 +110,7 @@ test('hidden showcase has no dangling work links and discovery leads to About', 
 });
 
 test('contact dialog has usable fields and restores focus after Escape', async ({ page }) => {
-  const trigger = page.getByRole('button', { name: /let.s talk/i }).first();
+  const trigger = page.getByRole('button', { name: 'Start a conversation', exact: true });
   await trigger.click();
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
