@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react'
+import { Monitor, Moon, Sun } from 'lucide-react'
 
 type ThemePreference = 'light' | 'dark' | 'system'
+
+const choices = [
+  { value: 'light', label: 'Light', Icon: Sun },
+  { value: 'dark', label: 'Dark', Icon: Moon },
+  { value: 'system', label: 'System', Icon: Monitor },
+] as const
 
 export default function ThemeSwitcher() {
   const [preference, setPreference] = useState<ThemePreference>(() => {
@@ -21,16 +28,20 @@ export default function ThemeSwitcher() {
     return () => media.removeEventListener('change', applyTheme)
   }, [preference])
 
-  return <label className="theme-switcher">
-    <span>Theme</span>
-    <select aria-label="Theme" value={preference} onChange={event => {
-      const next = event.target.value as ThemePreference
-      setPreference(next)
-      try { localStorage.setItem('muza-theme', next) } catch { /* Theme switching still works when storage is unavailable. */ }
-    }}>
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-      <option value="system">System</option>
-    </select>
-  </label>
+  return <div className="theme-switcher" role="group" aria-label="Appearance">
+    {choices.map(({ value, label, Icon }) => <button
+      type="button"
+      key={value}
+      aria-label={label}
+      aria-pressed={preference === value}
+      title={label}
+      onClick={() => {
+        setPreference(value)
+        try { localStorage.setItem('muza-theme', value) } catch { /* Theme switching still works when storage is unavailable. */ }
+      }}
+    >
+      <Icon size={16} aria-hidden="true" />
+      <span>{label}</span>
+    </button>)}
+  </div>
 }

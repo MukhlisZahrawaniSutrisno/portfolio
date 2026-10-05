@@ -1,30 +1,46 @@
 import { expect, test } from '@playwright/test';
 
+test('appearance buttons support the keyboard without a visible theme label', async ({ page }) => {
+  await page.goto('/');
+  const controls = page.getByRole('group', { name: 'Appearance', exact: true });
+  await expect(controls).not.toContainText(/Tema|Theme/);
+  const light = controls.getByRole('button', { name: 'Light', exact: true });
+  await light.focus();
+  await page.keyboard.press('Enter');
+  await expect(light).toHaveAttribute('aria-pressed', 'true');
+  await page.keyboard.press('Tab');
+  const dark = controls.getByRole('button', { name: 'Dark', exact: true });
+  await expect(dark).toBeFocused();
+  await page.keyboard.press('Space');
+  await expect(dark).toHaveAttribute('aria-pressed', 'true');
+  await expect(light).toHaveAttribute('aria-pressed', 'false');
+});
+
 test('theme choices persist and System tracks device changes', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.emulateMedia({ colorScheme: 'dark' });
   await page.goto('/');
-  const theme = page.getByRole('combobox', { name: 'Theme', exact: true });
-  await expect(theme).toHaveValue('system');
+  const theme = page.getByRole('group', { name: 'Appearance', exact: true });
+  await expect(theme.getByRole('button', { name: 'System', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await theme.selectOption('light');
+  await theme.getByRole('button', { name: 'Light', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await expect(page.locator('html')).toHaveCSS('color-scheme', 'light');
   await page.reload();
-  await expect(theme).toHaveValue('light');
+  await expect(theme.getByRole('button', { name: 'Light', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  await theme.selectOption('dark');
+  await theme.getByRole('button', { name: 'Dark', exact: true }).click();
   await page.emulateMedia({ colorScheme: 'light' });
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.reload();
-  await expect(theme).toHaveValue('dark');
-  await theme.selectOption('system');
+  await expect(theme.getByRole('button', { name: 'Dark', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await theme.getByRole('button', { name: 'System', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await page.emulateMedia({ colorScheme: 'dark' });
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.reload();
-  await expect(theme).toHaveValue('system');
+  await expect(theme.getByRole('button', { name: 'System', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect(page.locator('.headline-letter').last()).toHaveCSS('opacity', '1');
   await page.screenshot({ path: `test-results/theme-dark-${test.info().project.name}.png`, fullPage: true });
@@ -34,9 +50,9 @@ test('theme choices persist and System tracks device changes', async ({ page }) 
 test('themes remain usable at narrow widths with readable forms and no decorative copy', async ({ page }) => {
   await page.goto('/');
   await page.setViewportSize({ width: 320, height: 900 });
-  const theme = page.getByRole('combobox', { name: 'Theme', exact: true });
-  for (const choice of ['light', 'dark', 'system']) {
-    await theme.selectOption(choice);
+  const theme = page.getByRole('group', { name: 'Appearance', exact: true });
+  for (const choice of ['Light', 'Dark', 'System']) {
+    await theme.getByRole('button', { name: choice, exact: true }).click();
     await expect(theme).toBeVisible();
     await expect.poll(() => page.locator('.hero .button').evaluate(element => {
       const style = getComputedStyle(element);
@@ -76,12 +92,12 @@ test('blocked storage falls back safely without breaking the switcher', async ({
   });
   await page.emulateMedia({ colorScheme: 'light' });
   await page.goto('/');
-  const theme = page.getByRole('combobox', { name: 'Theme', exact: true });
-  await expect(theme).toHaveValue('system');
-  await theme.selectOption('dark');
+  const theme = page.getByRole('group', { name: 'Appearance', exact: true });
+  await expect(theme.getByRole('button', { name: 'System', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await theme.getByRole('button', { name: 'Dark', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.reload();
-  await expect(theme).toHaveValue('system');
+  await expect(theme.getByRole('button', { name: 'System', exact: true })).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('saved theme is applied before React loads and invalid values use System', async ({ page }) => {
