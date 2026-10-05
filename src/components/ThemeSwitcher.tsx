@@ -1,37 +1,23 @@
 import { useEffect, useState } from 'react'
-import { Monitor, Moon, Sun } from 'lucide-react'
+import { Moon, Sun } from 'lucide-react'
 
-type ThemePreference = 'light' | 'dark' | 'system'
+type ThemePreference = 'light' | 'dark'
 
 const choices = [
   { value: 'light', label: 'Light', Icon: Sun },
   { value: 'dark', label: 'Dark', Icon: Moon },
-  { value: 'system', label: 'System', Icon: Monitor },
 ] as const
 
 export default function ThemeSwitcher() {
   const [preference, setPreference] = useState<ThemePreference>(() => {
     const saved = document.documentElement.dataset.themePreference
-    return saved === 'light' || saved === 'dark' ? saved : 'system'
+    return saved === 'dark' ? 'dark' : 'light'
   })
 
   useEffect(() => {
-    const media = window.matchMedia('(prefers-color-scheme: dark)')
-    const applyTheme = () => {
-      const theme = preference === 'system' ? (media.matches ? 'dark' : 'light') : preference
-      document.documentElement.dataset.theme = theme
-      document.documentElement.dataset.themePreference = preference
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#191a18' : '#f8f8f6')
-    }
-    applyTheme()
-    if (preference !== 'system') return
-    if (typeof media.addEventListener === 'function') {
-      media.addEventListener('change', applyTheme)
-      return () => media.removeEventListener('change', applyTheme)
-    }
-    // Older browsers expose MediaQueryList changes through addListener.
-    media.addListener(applyTheme)
-    return () => media.removeListener(applyTheme)
+    document.documentElement.dataset.theme = preference
+    document.documentElement.dataset.themePreference = preference
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', preference === 'dark' ? '#191a18' : '#f8f8f6')
   }, [preference])
 
   return <div className="theme-switcher" role="group" aria-label="Appearance">

@@ -8,6 +8,7 @@ import About from './components/About'
 import Skills from './components/Skills'
 import ContactLinks from './components/ContactLinks'
 import ThemeSwitcher from './components/ThemeSwitcher'
+import SeasonEffects from './components/SeasonEffects'
 import { useMotionPreference } from './useMotionPreference'
 
 function ContactDialog({ dialogRef }: { dialogRef: React.RefObject<HTMLDialogElement | null> }) {
@@ -52,6 +53,7 @@ export default function App() {
     { title: 'Creative interactions', icon: MousePointer2, tags: 'Motion / Micro-interactions / CSS', text: 'Web animations, transitions, and interactive details using Motion and CSS.' },
   ]
   return <>
+    <SeasonEffects />
     <motion.div className="scroll-progress" style={{ scaleX: progress }} />
     <a className="skip-link" href="#main">Skip to content</a>
     <header className="header container">

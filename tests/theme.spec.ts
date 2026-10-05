@@ -1,38 +1,16 @@
 import { expect, test } from '@playwright/test';
 
-test('System follows live device changes with the legacy media listener API', async ({ page }) => {
-  await page.addInitScript(() => {
-    const matchMedia = window.matchMedia.bind(window);
-    window.matchMedia = query => {
-      const media = matchMedia(query);
-      if (query !== '(prefers-color-scheme: dark)') return media;
-      return new Proxy(media, {
-        get(target, property) {
-          if (property === 'addEventListener' || property === 'removeEventListener') return undefined;
-          const value = Reflect.get(target, property, target);
-          return typeof value === 'function' ? value.bind(target) : value;
-        },
-      });
-    };
-  });
-  await page.emulateMedia({ colorScheme: 'light' });
+test('appearance offers only Light and Dark and defaults to Light on dark devices', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
   await page.goto('/');
+  const controls = page.getByRole('group', { name: 'Appearance', exact: true });
+  await expect(controls.getByRole('button')).toHaveCount(2);
+  await expect(controls.getByRole('button', { name: 'Light', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(controls.getByRole('button', { name: 'Dark', exact: true })).toHaveAttribute('aria-pressed', 'false');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  await page.emulateMedia({ colorScheme: 'dark' });
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await page.emulateMedia({ colorScheme: 'light' });
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  await page.getByRole('button', { name: 'Dark', exact: true }).click();
-  await page.emulateMedia({ colorScheme: 'dark' });
-  await page.emulateMedia({ colorScheme: 'light' });
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await page.getByRole('button', { name: 'System', exact: true }).click();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  await page.emulateMedia({ colorScheme: 'dark' });
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 });
 
-test('live System updates preserve form state and manual themes ignore device changes', async ({ page }) => {
+test('device changes preserve form state and leave the chosen theme unchanged', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light' });
   await page.goto('/');
   const documentHandle = await page.evaluateHandle(() => document);
@@ -41,9 +19,9 @@ test('live System updates preserve form state and manual themes ignore device ch
   await dialog.getByLabel('Your name').fill('Visitor');
   for (const scheme of ['dark', 'light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
-    await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
-    await expect(page.locator('html')).toHaveCSS('color-scheme', scheme);
-    await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', scheme === 'dark' ? '#191a18' : '#f8f8f6');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(page.locator('html')).toHaveCSS('color-scheme', 'light');
+    await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#f8f8f6');
     await expect(dialog.getByLabel('Your name')).toHaveValue('Visitor');
   }
   expect(await page.evaluate(previous => previous === document, documentHandle)).toBe(true);
@@ -74,15 +52,17 @@ test('appearance buttons support the keyboard without a visible theme label', as
   await expect(light).toHaveAttribute('aria-pressed', 'false');
 });
 
-test('theme choices persist and System tracks device changes', async ({ page }) => {
+test('Light and Dark choices persist and ignore device changes', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.emulateMedia({ colorScheme: 'dark' });
   await page.goto('/');
   const theme = page.getByRole('group', { name: 'Appearance', exact: true });
-  await expect(theme.getByRole('button', { name: 'System', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(theme.getByRole('button', { name: 'Light', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await theme.getByRole('button', { name: 'Dark', exact: true }).click();
   await theme.getByRole('button', { name: 'Light', exact: true }).click();
+  expect(await page.evaluate(() => localStorage.getItem('muza-theme'))).toBe('light');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await expect(page.locator('html')).toHaveCSS('color-scheme', 'light');
   await page.reload();
@@ -90,15 +70,10 @@ test('theme choices persist and System tracks device changes', async ({ page }) 
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await theme.getByRole('button', { name: 'Dark', exact: true }).click();
   await page.emulateMedia({ colorScheme: 'light' });
+  expect(await page.evaluate(() => localStorage.getItem('muza-theme'))).toBe('dark');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.reload();
   await expect(theme.getByRole('button', { name: 'Dark', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  await theme.getByRole('button', { name: 'System', exact: true }).click();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  await page.emulateMedia({ colorScheme: 'dark' });
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await page.reload();
-  await expect(theme.getByRole('button', { name: 'System', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect(page.locator('.headline-letter').last()).toHaveCSS('opacity', '1');
   await page.screenshot({ path: `test-results/theme-dark-${test.info().project.name}.png`, fullPage: true });
@@ -109,7 +84,7 @@ test('themes remain usable at narrow widths with readable forms and no decorativ
   await page.goto('/');
   await page.setViewportSize({ width: 320, height: 900 });
   const theme = page.getByRole('group', { name: 'Appearance', exact: true });
-  for (const choice of ['Light', 'Dark', 'System']) {
+  for (const choice of ['Light', 'Dark']) {
     await theme.getByRole('button', { name: choice, exact: true }).click();
     await expect(theme).toBeVisible();
     await expect.poll(() => page.locator('.hero .button').evaluate(element => {
@@ -148,17 +123,17 @@ test('blocked storage falls back safely without breaking the switcher', async ({
     Object.defineProperty(Storage.prototype, 'getItem', { value() { throw new Error('Storage unavailable'); } });
     Object.defineProperty(Storage.prototype, 'setItem', { value() { throw new Error('Storage unavailable'); } });
   });
-  await page.emulateMedia({ colorScheme: 'light' });
+  await page.emulateMedia({ colorScheme: 'dark' });
   await page.goto('/');
   const theme = page.getByRole('group', { name: 'Appearance', exact: true });
-  await expect(theme.getByRole('button', { name: 'System', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(theme.getByRole('button', { name: 'Light', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await theme.getByRole('button', { name: 'Dark', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.reload();
-  await expect(theme.getByRole('button', { name: 'System', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(theme.getByRole('button', { name: 'Light', exact: true })).toHaveAttribute('aria-pressed', 'true');
 });
 
-test('saved theme is applied before React loads and invalid values use System', async ({ page }) => {
+test('saved themes apply before React loads and invalid or old System values use Light', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light' });
   await page.route(/\/src\/main\.tsx(?:\?.*)?$/, route => route.abort());
   await page.goto('/');
@@ -167,8 +142,15 @@ test('saved theme is applied before React loads and invalid values use System', 
   await expect(page.locator('#root')).toBeEmpty();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect(page.locator('html')).toHaveCSS('color-scheme', 'dark');
-  await page.evaluate(() => localStorage.setItem('muza-theme', 'invalid'));
+  await page.evaluate(() => localStorage.setItem('muza-theme', 'light'));
   await page.reload();
-  await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'system');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await page.emulateMedia({ colorScheme: 'dark' });
+  for (const invalid of ['invalid', 'system']) {
+    await page.evaluate(value => localStorage.setItem('muza-theme', value), invalid);
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'light');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(page.locator('html')).toHaveCSS('color-scheme', 'light');
+  }
 });

@@ -1,0 +1,191 @@
+.season-effects {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--accent);
+}
+
+.season-field {
+  position: absolute;
+  inset: 0;
+  animation: season-envelope 30s ease-in-out both;
+}
+
+.season-particle {
+  position: absolute;
+  left: var(--x);
+  top: -40px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+  animation: season-fall var(--duration) linear var(--delay) infinite;
+}
+
+.season-effects[data-season='rain'] .season-particle,
+.season-effects[data-season='storm'] .season-particle {
+  width: 1px;
+  height: 26px;
+  border-radius: 1px;
+  animation: season-rain 4s linear var(--delay) infinite;
+}
+
+.season-effects[data-season='sakura'] { color: #bc8b95; }
+.season-effects[data-season='sakura'] .season-particle {
+  width: 9px;
+  height: 13px;
+  border-radius: 80% 15% 75% 20%;
+}
+
+.season-effects[data-season='autumn'] { color: #ad8557; }
+.season-effects[data-season='autumn'] .season-particle {
+  width: 10px;
+  height: 17px;
+  border-radius: 85% 10% 85% 10%;
+}
+
+.season-effects[data-season='wind'] .season-particle {
+  top: var(--y);
+  left: -120px;
+  width: 100px;
+  height: 14px;
+  border: 1px solid currentColor;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-radius: 50%;
+  background: none;
+  animation: season-wind var(--duration) linear var(--delay) infinite;
+}
+
+.season-effects[data-season='dry'],
+.season-effects[data-season='clear'] { color: var(--accent-text); }
+.season-effects[data-season='dry'] .season-particle,
+.season-effects[data-season='clear'] .season-particle {
+  top: var(--y);
+  width: 3px;
+  height: 3px;
+  animation: season-drift var(--duration) ease-in-out var(--delay) infinite;
+}
+
+.season-effects[data-season='dry'] .season-particle:first-child,
+.season-effects[data-season='clear'] .season-particle:first-child {
+  left: auto;
+  right: 7%;
+  top: 15%;
+  width: 76px;
+  height: 76px;
+  background: radial-gradient(circle, currentColor 0 28%, transparent 30% 44%, currentColor 46% 47%, transparent 49%);
+  animation: season-sun 16s ease-in-out infinite;
+}
+
+.season-effects[data-season='dry'] .season-particle:first-child {
+  color: #b79159;
+  width: 104px;
+  height: 104px;
+}
+
+.season-effects[data-season='storm'] .season-particle:first-child {
+  top: 10%;
+  left: auto;
+  right: 5%;
+  width: 130px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, var(--muted), transparent 70%);
+  animation: season-cloud 14s ease-in-out infinite;
+}
+
+.season-effects[data-season='storm'] .season-particle:nth-child(2) {
+  top: 17%;
+  left: auto;
+  right: 11%;
+  width: 15px;
+  height: 36px;
+  border-radius: 0;
+  clip-path: polygon(50% 0, 10% 55%, 47% 55%, 28% 100%, 95% 35%, 58% 35%, 80% 0);
+  animation: season-lightning 13s ease-in-out infinite;
+}
+
+html[data-season='sakura'] .hero h1::after,
+html[data-season='autumn'] .hero h1::after {
+  content: '';
+  position: absolute;
+  top: 36%;
+  right: 7%;
+  width: 8px;
+  height: 13px;
+  border-radius: 85% 10% 85% 10%;
+  background: #ad8557;
+  opacity: 0;
+  pointer-events: none;
+  animation: season-heading 18s ease-in-out infinite;
+}
+
+html[data-season='sakura'] .hero h1::after { background: #bc8b95; }
+
+.season-effects[data-paused='true'] .season-field,
+.season-effects[data-paused='true'] .season-particle,
+html[data-season-paused='true'] .hero h1::after { animation-play-state: paused; }
+
+@keyframes season-envelope {
+  0%, 100% { opacity: 0; }
+  7%, 92% { opacity: 1; }
+}
+
+@keyframes season-fall {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(0); }
+  15%, 75% { opacity: .18; }
+  100% { opacity: 0; transform: translate3d(80px, calc(100dvh + 80px), 0) rotate(260deg); }
+}
+
+@keyframes season-rain {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(12deg); }
+  20%, 70% { opacity: .12; }
+  100% { opacity: 0; transform: translate3d(-100px, calc(100dvh + 80px), 0) rotate(12deg); }
+}
+
+@keyframes season-wind {
+  0% { opacity: 0; transform: translate3d(0, 0, 0); }
+  25%, 65% { opacity: .1; }
+  100% { opacity: 0; transform: translate3d(calc(100vw + 240px), -30px, 0); }
+}
+
+@keyframes season-drift {
+  0%, 100% { opacity: 0; transform: translate3d(0, 0, 0); }
+  50% { opacity: .16; transform: translate3d(16px, -24px, 0); }
+}
+
+@keyframes season-sun {
+  0%, 100% { opacity: .04; transform: scale(.94); }
+  50% { opacity: .11; transform: scale(1.04); }
+}
+
+@keyframes season-cloud {
+  0%, 100% { opacity: .12; transform: translateX(0); }
+  50% { opacity: .19; transform: translateX(-24px); }
+}
+
+@keyframes season-lightning {
+  0%, 40%, 43%, 100% { opacity: 0; }
+  41%, 42% { opacity: .2; }
+}
+
+@keyframes season-heading {
+  0%, 60%, 100% { opacity: 0; transform: translate3d(0, -10px, 0) rotate(-20deg); }
+  70% { opacity: .28; }
+  90% { opacity: 0; transform: translate3d(18px, 35px, 0) rotate(60deg); }
+}
+
+@media (max-width: 700px) {
+  .season-particle:nth-child(n + 7) { display: none; }
+  .season-effects { opacity: .75; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .season-effects,
+  html[data-season] .hero h1::after { display: none; }
+}

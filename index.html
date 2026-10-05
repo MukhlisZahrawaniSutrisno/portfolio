@@ -7,14 +7,12 @@
     <script>
       // Apply the saved preference before the page renders to avoid a theme flash.
       (() => {
-        let preference = 'system';
+        let preference = 'light';
         try {
           const saved = localStorage.getItem('muza-theme');
-          if (saved === 'light' || saved === 'dark' || saved === 'system') preference = saved;
+          if (saved === 'light' || saved === 'dark') preference = saved;
         } catch {}
-        const theme = preference === 'system'
-          ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-          : preference;
+        const theme = preference;
         document.documentElement.dataset.theme = theme;
         document.documentElement.dataset.themePreference = preference;
         document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#191a18' : '#f8f8f6';
