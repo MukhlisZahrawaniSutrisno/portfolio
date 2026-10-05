@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 test('seasons change after 30 seconds without repeating or shifting content', async ({ page }) => {
-  await page.clock.install();
+  await page.clock.install({ time: new Date('2026-10-05T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-10-05T00:01:00Z'));
   await page.goto('/');
   const effects = page.locator('.season-effects');
   await expect(effects).toHaveAttribute('data-season', /rain|dry|sakura|storm|wind|clear|autumn/);
@@ -19,7 +20,7 @@ test('seasons change after 30 seconds without repeating or shifting content', as
     await page.clock.fastForward(30_000);
     await expect(effects).not.toHaveAttribute('data-season', previous!);
     await expect(effects).toHaveAttribute('data-season', /^(rain|dry|sakura|storm|wind|clear|autumn)$/);
-    expect(await effects.evaluate(element => element.childElementCount)).toBeLessThanOrEqual(20);
+    expect(await effects.locator('*').count()).toBeLessThan(250);
   }
   expect(await page.locator('h1').boundingBox()).toEqual(geometry);
   await page.getByRole('button', { name: 'Dark', exact: true }).click();
@@ -39,6 +40,7 @@ test('reduced motion disables seasons immediately and restores them when allowed
   await expect(page.locator('.season-effects')).toBeAttached();
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('.season-effects')).toHaveCount(0);
+  await expect(page.locator('.season-details')).toHaveCount(0);
 });
 
 test('hidden tabs pause effects and the seasonal timer', async ({ page }) => {
@@ -53,6 +55,9 @@ test('hidden tabs pause effects and the seasonal timer', async ({ page }) => {
     document.dispatchEvent(new Event('visibilitychange'));
   });
   await expect(effects).toHaveAttribute('data-paused', 'true');
+  await expect.poll(() => page.locator('.season-effects, .season-details').evaluateAll(elements =>
+    elements.flatMap(element => element.getAnimations({ subtree: true })).filter(animation => animation.playState === 'running').length,
+  )).toBe(0);
   await page.clock.fastForward(90_000);
   await expect(effects).toHaveAttribute('data-season', initial!);
   await page.evaluate(() => {
@@ -63,4 +68,55 @@ test('hidden tabs pause effects and the seasonal timer', async ({ page }) => {
   await expect(effects).toHaveAttribute('data-paused', 'false');
   await page.clock.fastForward(30_000);
   await expect(effects).not.toHaveAttribute('data-season', initial!);
+});
+
+test('all seven scenes render their details and remain usable in both themes', async ({ page }) => {
+  test.setTimeout(120_000);
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.addInitScript(() => {
+    let seed = 123456;
+    Math.random = () => {
+      seed = (1664525 * seed + 1013904223) >>> 0;
+      return seed / 4294967296;
+    };
+  });
+  await page.clock.install();
+  await page.goto('/');
+  const effects = page.locator('.season-effects');
+  await expect(effects).toBeAttached();
+  await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() => document.querySelectorAll('.headline-letter').forEach(letter => letter.getAnimations().forEach(animation => animation.finish())));
+  const visited = new Set<string>();
+  for (let turn = 0; turn < 60 && visited.size < 7; turn++) {
+    const current = (await effects.getAttribute('data-season'))!;
+    if (!visited.has(current)) {
+      visited.add(current);
+      await expect(effects.locator('[data-element]').first()).toBeAttached();
+      await expect(page.locator('.hero h1 .season-details')).toHaveAttribute('aria-hidden', 'true');
+      if (current === 'autumn') await expect(page.locator('.hero-art .season-details svg').first()).toBeAttached();
+      for (const theme of ['Light', 'Dark']) {
+        await page.getByRole('button', { name: theme, exact: true }).click();
+        await expect(page.locator('html')).toHaveAttribute('data-theme', theme.toLowerCase());
+        await expect(page.locator('.hero .button')).toHaveCSS('background-color', theme === 'Light' ? 'rgb(37, 37, 37)' : 'rgb(231, 232, 220)');
+        await page.evaluate(() => {
+          document.querySelectorAll('.season-effects, .season-details').forEach(element => {
+            element.getAnimations({ subtree: true }).forEach(animation => {
+              animation.pause();
+              animation.currentTime = 8_000;
+            });
+          });
+        });
+        expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+        await page.screenshot({ path: `test-results/season-${current}-${theme.toLowerCase()}-${test.info().project.name}.png` });
+      }
+    }
+    const previous = current;
+    await page.clock.fastForward(30_000);
+    await expect(effects).not.toHaveAttribute('data-season', previous);
+  }
+  expect([...visited].sort()).toEqual(['autumn', 'clear', 'dry', 'rain', 'sakura', 'storm', 'wind']);
+  await page.locator('#contact').getByRole('button', { name: /let.s talk/i }).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  expect(errors).toEqual([]);
 });

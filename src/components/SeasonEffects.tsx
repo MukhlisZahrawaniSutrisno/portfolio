@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useMotionPreference } from '../useMotionPreference'
+import SeasonScene, { type Season } from './SeasonScene'
+import SeasonDetails from './SeasonDetails'
 import './season-effects.css'
 
 const seasons = ['rain', 'dry', 'sakura', 'storm', 'wind', 'clear', 'autumn'] as const
-type Season = typeof seasons[number]
 const interval = 30_000
 
 function nextSeason(current?: Season): Season {
@@ -15,12 +17,19 @@ export default function SeasonEffects() {
   const reduced = useMotionPreference()
   const [season, setSeason] = useState<Season>(() => nextSeason())
   const [paused, setPaused] = useState(() => document.hidden)
-  const particles = useMemo(() => Array.from({ length: 12 }, () => ({
-    '--x': `${Math.random() * 100}%`,
-    '--y': `${7 + Math.random() * 80}%`,
-    '--delay': `${-Math.random() * 20}s`,
-    '--duration': `${12 + Math.random() * 10}s`,
-  } as CSSProperties)), [season])
+  const [anchors, setAnchors] = useState<{ element: HTMLElement; location: 'heading' | 'art' | 'skills' }[]>([])
+
+  useEffect(() => {
+    const targets = [
+      ['.hero h1', 'heading'],
+      ['.hero-art', 'art'],
+      ['.skills-groups', 'skills'],
+    ] as const
+    setAnchors(targets.flatMap(([selector, location]) => {
+      const element = document.querySelector<HTMLElement>(selector)
+      return element ? [{ element, location }] : []
+    }))
+  }, [])
 
   useEffect(() => {
     if (reduced) return
@@ -65,13 +74,12 @@ export default function SeasonEffects() {
 
   if (reduced) return null
 
-  return <div className="season-effects" data-season={season} data-paused={String(paused)} aria-hidden="true">
-    <div className="season-field" key={season}>
-      {particles.map((style, index) => <span
-        className="season-particle"
-        key={index}
-        style={style}
-      />)}
+  return <>
+    <div className="season-effects" data-season={season} data-paused={String(paused)} aria-hidden="true">
+      <div className="season-field" key={season}><SeasonScene season={season} /></div>
     </div>
-  </div>
+    {anchors.map(({ element, location }) => createPortal(
+      <SeasonDetails key={season} season={season} location={location} />, element, location,
+    ))}
+  </>
 }

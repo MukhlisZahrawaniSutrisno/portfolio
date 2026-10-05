@@ -1,0 +1,44 @@
+.hero h1, .hero-art, .skills-groups { position: relative; }
+.season-details { position: absolute; pointer-events: none; user-select: none; inset: 0; z-index: 3; color: #b4844e; }
+.season-details[data-season='sakura'] { color: #cf96a7; }
+.season-details[data-season='wind'] { color: var(--accent); }
+.season-details[data-location='heading'] { overflow: clip; inset: -30px -5px -45px 0; }
+.season-details[data-location='art'] { overflow: hidden; }
+.detail-flight { position: absolute; right: 0; top: 40%; width: 18px; height: 25px; opacity: 0; transform-origin: 50% 30%; animation: detail-leaf-route 23s ease-in-out infinite; }
+.detail-flight svg { display: block; width: 100%; height: 100%; }
+.detail-flight-1 { top: 67%; right: -18px; width: 13px; animation-delay: -9s; animation-duration: 27s; }
+.detail-flight-2 { top: 22%; right: 16px; width: 11px; animation-delay: -15s; animation-duration: 21s; }
+[data-season='sakura'] .detail-flight { animation-name: detail-petal-route; }
+[data-season='wind'] .detail-flight { animation-name: detail-wind-route; width: 13px; }
+.season-details[data-location='skills'] { top: -42px; bottom: auto; height: 34px; overflow: hidden; }
+[data-location='skills'] .detail-flight { top: 8px; right: 24%; width: 12px; animation-name: detail-skill-route; }
+[data-location='skills'] .detail-flight-1 { right: 55%; animation-delay: -12s; }
+[data-location='skills'] .detail-flight-2 { right: 10%; }
+.detail-bead { position: absolute; right: 4px; top: 30%; width: 4px; height: 7px; border-radius: 70% 70% 55% 55%; background: var(--accent); box-shadow: inset 1px 1px 0 var(--surface); opacity: 0; animation: detail-bead-slide 19s ease-in infinite; }
+.detail-bead-two { right: -9px; top: 55%; width: 3px; animation-delay: -11s; }
+.detail-ripple { position: absolute; right: -15px; top: 73%; width: 20px; height: 5px; border: 1px solid var(--accent); border-radius: 50%; opacity: 0; animation: detail-ripple 19s ease-out infinite; }
+.detail-wake { position: absolute; top: 30%; right: -30px; width: 120px; opacity: 0; animation: detail-wake 22s ease-in-out infinite; }
+.detail-glint { position: absolute; right: 1%; top: 23%; width: 25px; height: 25px; border-radius: 50%; background: radial-gradient(circle, #d5b56a55, #d5b56a00 68%); opacity: 0; animation: detail-glint 24s ease-in-out infinite; }
+.detail-glint::before, .detail-glint::after { content: ''; position: absolute; background: #d5b56a; border-radius: 50%; left: 12px; top: 4px; width: 1px; height: 17px; }
+.detail-glint::after { transform: rotate(90deg); }
+.detail-edge-glow { position: absolute; right: -2px; top: 38%; width: 48px; height: 65px; background: radial-gradient(ellipse at right, var(--accent-halo), transparent 72%); opacity: 0; animation: detail-storm 26s ease-in-out infinite; }
+.detail-squirrel { position: absolute; width: clamp(100px, 12vw, 155px); height: auto; right: 5%; bottom: 32px; opacity: 0; animation: squirrel-visit 27s linear infinite; transform-origin: 50% 90%; }
+.squirrel-tail { transform-origin: 79px 87px; animation: squirrel-tail 27s ease-in-out infinite; }
+.squirrel-paws { transform-origin: 126px 86px; animation: squirrel-nibble 27s ease-in-out infinite; }
+.squirrel-body { transform-origin: 95px 100px; animation: squirrel-breathe 27s ease-in-out infinite; }
+@keyframes detail-leaf-route { 0%, 15%, 100% { opacity: 0; transform: translate(24px, -45px) rotate(-35deg); } 23% { opacity: .65; } 37% { transform: translate(-9px, 15px) rotate(28deg); opacity: .65; } 44%, 51% { transform: translate(-13px, 17px) rotate(16deg); opacity: .55; } 67% { opacity: 0; transform: translate(65px, 50px) rotate(145deg); } }
+@keyframes detail-petal-route { 0%, 12%, 100% { opacity: 0; transform: translate(35px, -32px) rotate(-40deg); } 25% { opacity: .7; transform: translate(-16px, 8px) rotate(36deg) scaleX(.7); } 43% { opacity: .55; transform: translate(5px, 25px) rotate(-12deg) scaleX(1); } 58% { opacity: 0; transform: translate(-25px, 52px) rotate(85deg) scaleX(.5); } }
+@keyframes detail-wind-route { 0%, 18%, 100% { opacity: 0; transform: translate(-40px, 20px) rotate(-30deg); } 30% { opacity: .5; transform: translate(-12px, -15px) rotate(40deg); } 43% { opacity: .4; transform: translate(30px, -4px) rotate(125deg); } 58% { opacity: 0; transform: translate(70px, -30px) rotate(200deg); } }
+@keyframes detail-skill-route { 0%, 30%, 100% { opacity: 0; transform: translate(-40px, -15px) rotate(-20deg); } 43% { opacity: .45; transform: translate(0, 0) rotate(25deg); } 58% { opacity: 0; transform: translate(60px, 16px) rotate(95deg); } }
+@keyframes detail-bead-slide { 0%, 15%, 100% { opacity: 0; transform: translateY(-8px); } 23%, 40% { opacity: .45; transform: translateY(0); } 53% { opacity: 0; transform: translateY(48px); } }
+@keyframes detail-ripple { 0%, 51%, 65%, 100% { opacity: 0; transform: scale(.3); } 54% { opacity: .35; } 64% { opacity: 0; transform: scale(1.5); } }
+@keyframes detail-wake { 0%, 21%, 58%, 100% { opacity: 0; transform: translateX(-20px); } 35% { opacity: .18; } 55% { opacity: 0; transform: translateX(30px); } }
+@keyframes detail-glint { 0%, 33%, 62%, 100% { opacity: 0; transform: translate(-12px, 0) scale(.6); } 43% { opacity: .4; transform: translate(0, -6px) scale(1); } 60% { opacity: 0; transform: translate(18px, -10px) scale(.5); } }
+@keyframes detail-storm { 0%, 31%, 36%, 100% { opacity: 0; } 33%, 34% { opacity: .65; } }
+@keyframes squirrel-visit { 0%, 12%, 69%, 100% { opacity: 0; transform: translateX(110px); } 16% { opacity: .9; transform: translate(70px, -9px) rotate(-3deg); } 20% { opacity: .9; transform: translate(35px, 0); } 24% { opacity: .9; transform: translate(8px, -12px) rotate(-3deg); } 28%, 52% { opacity: .9; transform: translate(0, 0); } 57% { opacity: .9; transform: translate(30px, -13px) rotate(4deg); } 62% { opacity: .7; transform: translate(72px, 0); } 68% { opacity: 0; transform: translate(115px, -10px); } }
+@keyframes squirrel-tail { 0%, 29%, 40%, 49%, 100% { transform: rotate(0); } 33%, 45% { transform: rotate(-9deg); } 36%, 47% { transform: rotate(5deg); } }
+@keyframes squirrel-nibble { 0%, 30%, 52%, 100% { transform: translate(0, 0); } 34%, 40%, 46% { transform: translate(-2px, -4px) rotate(-5deg); } 37%, 43%, 49% { transform: translate(0, -1px); } }
+@keyframes squirrel-breathe { 0%, 28%, 52%, 100% { transform: scaleY(1); } 34%, 44% { transform: scaleY(1.015); } 39%, 49% { transform: scaleY(.99); } }
+html[data-season-paused='true'] .season-details *, html[data-season-paused='true'] .season-details *::before, html[data-season-paused='true'] .season-details *::after { animation-play-state: paused; }
+@media (max-width: 700px) { .detail-flight { width: 13px; right: 5px; } .detail-flight-1 { right: -3px; width: 10px; } .detail-flight-2 { display: none; } .detail-squirrel { width: 105px; right: 8%; bottom: 28px; } .detail-wake { width: 85px; right: -5px; } [data-location='skills'] .detail-flight { width: 10px; } }
+@media (prefers-reduced-motion: reduce) { .season-details { display: none; } .season-details * { animation: none !important; } }

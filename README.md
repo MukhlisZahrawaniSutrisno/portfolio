@@ -36,7 +36,7 @@ Belum ada script lint yang dikonfigurasi; `npm run build` menjalankan pemeriksaa
 
 - Selected Work sementara disembunyikan. Ubah `showSelectedWork` menjadi `true` di `src/content.ts` untuk memulihkan showcase, tautan Work, dan tombol hero; kode proyek serta studi kasus tetap disimpan.
 - Pilih Light atau Dark melalui tombol tema di navbar. Pilihan tersimpan di browser; preferensi System lama kembali ke Light. Token warna ada di `src/theme.css`.
-- Tujuh efek musim dipilih acak setiap 30 detik tanpa mengulang musim yang sedang aktif. Pengaturan efek ada di `src/components/SeasonEffects.tsx` dan `season-effects.css`; tab tersembunyi menjeda timer serta animasi, dan reduced motion menonaktifkan efek.
+- Tujuh adegan musim dipilih acak setiap 30 detik tanpa mengulang musim yang sedang aktif. `SeasonEffects.tsx` mengatur rotasi/pause; `SeasonScene.tsx` dan `season-scene.css` menggambar atmosfer berlapis; `SeasonDetails.tsx` dan `season-details.css` menempatkan detail di judul, ilustrasi, dan area skills. Tab tersembunyi menjeda timer serta animasi, dan reduced motion menonaktifkan seluruh efek.
 - Ubah nama, lokasi, fokus, stack, skills, availability, dan kontak di `src/content.ts`.
 - GitHub menggunakan URL repository dari remote origin yang sudah ada. Gmail, LinkedIn, dan Resume ditampilkan sebagai belum tersedia sampai diisi. Tidak ada URL personal yang dibuat-buat.
 - Kategori Databases sengaja kosong karena belum ada data database di proyek. Isi dengan pengalaman yang sebenarnya.
@@ -45,4 +45,4 @@ Belum ada script lint yang dikonfigurasi; `npm run build` menjalankan pemeriksaa
 - Ubah teks utama di `src/App.tsx` serta judul/deskripsi metadata di `index.html`.
 - Ganti font atau token warna di `src/styles.css`. Font Google memiliki fallback lokal bila jaringan tidak tersedia.
 
-Tidak membutuhkan API key. Mockup proyek dan objek hero dibuat dengan CSS/SVG lokal. Animasi menghormati `prefers-reduced-motion`, termasuk saat preferensi diubah ketika halaman terbuka. Hero memakai animasi transform singkat dan interaksi pointer dengan Motion values. Efek musim memakai animasi CSS transform/opacity dengan 12 partikel desktop dan enam partikel yang terlihat di mobile.
+Tidak membutuhkan API key. Mockup proyek, objek hero, dedaunan, bunga, kilat, dan tupai dibuat dengan CSS/SVG lokal. Animasi menghormati `prefers-reduced-motion`, termasuk saat preferensi diubah ketika halaman terbuka. Hero memakai animasi transform singkat dan interaksi pointer dengan Motion values. Adegan musim memakai lapisan hujan, percikan, awan, cahaya, serta gerak organik; lapisan tambahan dikurangi di mobile. Rotasi tidak menggunakan loop render JavaScript per frame, dan semua dekorasi mengabaikan pointer agar navigasi tetap berfungsi.
