@@ -7,6 +7,7 @@ import Hero from './components/Hero'
 import About from './components/About'
 import Skills from './components/Skills'
 import ContactLinks from './components/ContactLinks'
+import Footer from './components/Footer'
 import ThemeSwitcher from './components/ThemeSwitcher'
 import SeasonEffects from './components/SeasonEffects'
 import ClockOpening from './components/ClockOpening'
@@ -111,7 +112,7 @@ export default function App() {
       <About onContact={openContact} />
       <Skills />
       <section className="services container"><div className="services-heading"><h2>Services</h2></div><div className="service-list">{services.map((s, i) => <article className={`service ${expanded === i ? 'expanded' : ''}`} key={s.title}><button className="service-trigger" aria-expanded={expanded === i} aria-controls={`service-${i}`} onClick={() => setExpanded(expanded === i ? null : i)}><s.icon size={20} /><span>{s.title}</span><Plus className="service-plus" size={20} /></button><AnimatePresence initial={false}>{expanded === i && <motion.div id={`service-${i}`} initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: reduced ? 0 : .3 }} className="service-content"><p>{s.text}</p><span>{s.tags}</span></motion.div>}</AnimatePresence></article>)}</div></section>
-      <section id="contact" className="contact"><div className="container"><div className="contact-top"><span><span className="status-dot" /> {profile.availability}</span></div><div className="contact-bottom"><button className="button light" onClick={openContact}>Discuss a project <ArrowRight size={17} /></button></div><ContactLinks /><footer><a className="footer-mark" href="#">Muza</a><a href="#">Back to top <ArrowUpRight size={12} /></a><span className="footer-year">2026</span></footer></div></section>
+      <section id="contact" className="contact"><div className="container"><div className="contact-top"><span><span className="status-dot" /> {profile.availability}</span></div><div className="contact-bottom"><button className="button light" onClick={openContact}>Discuss a project <ArrowRight size={17} /></button></div><ContactLinks /><Footer /></div></section>
     </main>
     <ContactDialog dialogRef={dialogRef} />
     </div>
