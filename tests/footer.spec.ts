@@ -13,7 +13,7 @@ test('footer name stays fully visible from narrow phones to wide desktops', asyn
     await expect(name).toBeVisible()
     const layout = await name.evaluate(element => {
       const panel = element.parentElement!.getBoundingClientRect()
-      const words = [...element.querySelectorAll('span > span')].map(word => {
+      const words = [...element.querySelectorAll('.footer-word')].map(word => {
         const range = document.createRange()
         range.selectNodeContents(word)
         const bounds = range.getBoundingClientRect()
@@ -34,4 +34,35 @@ test('footer name stays fully visible from narrow phones to wide desktops', asyn
       expect(word.bottom, `bottom clipping at ${width}px`).toBeLessThanOrEqual(layout.panel.bottom)
     }
   }
+})
+
+test('footer letters disappear in sequence and repeat without moving the text', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await page.goto('/#contact')
+  const name = page.locator('footer .footer-name')
+  await name.scrollIntoViewIfNeeded()
+  const letters = name.locator('.footer-letter')
+  await expect(letters).toHaveCount(24)
+  await expect(name).toHaveAccessibleName('Mukhlis Zahrawani Sutrisno')
+  const frames = await name.evaluate(element => {
+    const letters = [...element.querySelectorAll<HTMLElement>('.footer-letter')]
+    const animations = letters.map(letter => letter.getAnimations()[0])
+    animations.forEach(animation => animation.pause())
+    const sample = (time: number) => {
+      animations.forEach(animation => { animation.currentTime = time })
+      return letters.map(letter => ({ opacity: Number(getComputedStyle(letter).opacity), width: letter.getBoundingClientRect().width }))
+    }
+    return { start: sample(0), early: sample(2600), hidden: sample(4600), restored: sample(7500), repeat: sample(10600) }
+  })
+  expect(frames.start.every(letter => letter.opacity === 1)).toBe(true)
+  expect(frames.early[0].opacity).toBe(0)
+  expect(frames.early.at(-1)!.opacity).toBe(1)
+  expect(frames.hidden.every(letter => letter.opacity === 0)).toBe(true)
+  expect(frames.restored.every(letter => letter.opacity === 1)).toBe(true)
+  expect(frames.repeat.map(letter => letter.opacity)).toEqual(frames.early.map(letter => letter.opacity))
+  expect(frames.hidden.map(letter => letter.width)).toEqual(frames.start.map(letter => letter.width))
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await expect(letters.first()).toHaveCSS('animation-name', 'none')
+  await expect(letters.first()).toHaveCSS('opacity', '1')
+  await expect(letters.last()).toHaveCSS('opacity', '1')
 })

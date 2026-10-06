@@ -1,0 +1,25 @@
+@font-face {
+  font-family: 'GFS Didot';
+  src: url('/fonts/GFSDidot-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.footer-name {
+  font-family: 'GFS Didot', 'Times New Roman', serif;
+}
+
+.footer-letter {
+  display: inline-block;
+  animation: footer-letter-fade 8s ease-in-out infinite both;
+}
+
+@keyframes footer-letter-fade {
+  0%, 25%, 64%, 100% { opacity: 1; }
+  29%, 60% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-letter { animation: none; opacity: 1; }
+}
