@@ -95,7 +95,7 @@ test('all seven scenes render their details and remain usable in both themes', a
       visited.add(current);
       await expect(effects.locator('[data-element]').first()).toBeAttached();
       await expect(page.locator('.hero h1 .season-details')).toHaveAttribute('aria-hidden', 'true');
-      if (current === 'autumn') await expect(page.locator('.hero-art .season-details svg').first()).toBeAttached();
+      await expect(page.locator('.hero-art .season-details')).toHaveCount(0);
       for (const theme of ['Light', 'Dark']) {
         await page.getByRole('button', { name: theme, exact: true }).click();
         await expect(page.locator('html')).toHaveAttribute('data-theme', theme.toLowerCase());

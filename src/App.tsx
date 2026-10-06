@@ -10,6 +10,7 @@ import ContactLinks from './components/ContactLinks'
 import ThemeSwitcher from './components/ThemeSwitcher'
 import SeasonEffects from './components/SeasonEffects'
 import ClockOpening from './components/ClockOpening'
+import TextMarquee from './components/TextMarquee'
 import { useMotionPreference } from './useMotionPreference'
 import './components/navbar.css'
 
@@ -105,6 +106,7 @@ export default function App() {
     </motion.div>
     <main id="main" tabIndex={-1}>
       <Hero />
+      <TextMarquee />
       {showSelectedWork && <Work />}
       <About onContact={openContact} />
       <Skills />

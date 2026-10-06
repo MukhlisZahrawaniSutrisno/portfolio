@@ -17,12 +17,11 @@ export default function SeasonEffects() {
   const reduced = useMotionPreference()
   const [season, setSeason] = useState<Season>(() => nextSeason())
   const [paused, setPaused] = useState(() => document.hidden)
-  const [anchors, setAnchors] = useState<{ element: HTMLElement; location: 'heading' | 'art' | 'skills' }[]>([])
+  const [anchors, setAnchors] = useState<{ element: HTMLElement; location: 'heading' | 'skills' }[]>([])
 
   useEffect(() => {
     const targets = [
       ['.hero h1', 'heading'],
-      ['.hero-art', 'art'],
       ['.skills-groups', 'skills'],
     ] as const
     setAnchors(targets.flatMap(([selector, location]) => {
