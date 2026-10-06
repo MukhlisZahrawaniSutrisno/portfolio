@@ -23,7 +23,7 @@ test('clock reverses on arrival, advances on departure, and restores the origina
   expect(await page.locator('[data-opening-numeral]').allTextContents()).toEqual(expect.arrayContaining(['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII']));
   await expect(page.locator('.portfolio-content')).toHaveAttribute('inert', '');
   expect(await handMovement(page)).toBeLessThan(0);
-  await page.getByRole('button', { name: 'Skip intro' }).click();
+  await page.keyboard.press('Escape');
   await expect(opening(page)).toHaveAttribute('data-phase', 'forward');
   expect(await handMovement(page)).toBeGreaterThan(0);
   await page.clock.runFor(1500);
@@ -68,7 +68,7 @@ test('touch scroll departs forward and preserves the requested movement', async 
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
 });
 
-for (const key of ['Escape', 'ArrowDown', 'PageDown', 'Space']) {
+for (const key of ['Escape', 'Tab', 'ArrowDown', 'PageDown', 'Space']) {
   test(`${key} dismisses the opening and restores keyboard access`, async ({ page }) => {
     await page.goto('/');
     await page.keyboard.press(key);
@@ -120,7 +120,7 @@ test('reduced motion bypasses the opening and a live change dismisses immediatel
   await expect(page.locator('.portfolio-content')).not.toHaveAttribute('inert', '');
 });
 
-test('clock and skip control fit small phones, landscape screens, and desktops', async ({ page }) => {
+test('clock fits and stays centered on phones, landscape screens, and desktops', async ({ page }) => {
   await page.goto('/');
   await expect(opening(page)).toBeVisible();
   await page.screenshot({ path: `test-results/clock-opening-${test.info().project.name}.png` });
@@ -128,14 +128,15 @@ test('clock and skip control fit small phones, landscape screens, and desktops',
     await page.setViewportSize(viewport);
     await page.goto('/');
     const clock = await page.locator('.opening-clock').boundingBox();
-    const skip = await page.getByRole('button', { name: 'Skip intro' }).boundingBox();
-    for (const box of [clock, skip]) {
+    for (const box of [clock]) {
       expect(box).not.toBeNull();
       expect(box!.x).toBeGreaterThanOrEqual(0);
       expect(box!.y).toBeGreaterThanOrEqual(0);
       expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width + 1);
       expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height + 1);
     }
+    expect(clock!.x + clock!.width / 2).toBeCloseTo(viewport.width / 2, 0);
+    expect(clock!.y + clock!.height / 2).toBeCloseTo(viewport.height / 2, 0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
   }
 });

@@ -30,11 +30,11 @@ export default function ClockFace({ time, opening = false, ref }: ClockFaceProps
       {Array.from({ length: 60 }, (_, index) => <line key={index} className={index % 5 === 0 ? 'clock-tick clock-hour-tick' : 'clock-tick'} x1="160" y1={index % 5 === 0 ? 24 : 27} x2="160" y2="31" transform={`rotate(${index * 6} 160 160)`} />)}
       {numerals.map((numeral, index) => {
         const angle = index * Math.PI / 6
-        return <text key={numeral} data-clock-numeral data-opening-numeral={opening || undefined} x={160 + Math.sin(angle) * 113} y={160 - Math.cos(angle) * 113} dominantBaseline="central" textAnchor="middle">{numeral}</text>
+        return <text key={numeral} data-clock-numeral data-opening-numeral={opening || undefined} style={opening ? { animationDelay: `${(12 - index) % 12 * .018}s` } : undefined} x={160 + Math.sin(angle) * 113} y={160 - Math.cos(angle) * 113} dominantBaseline="central" textAnchor="middle">{numeral}</text>
       })}
       <g data-hand="hour" data-opening-hand={opening ? 'hour' : undefined} transform={`rotate(${time.hour} 160 160)`}><path className="clock-hour-hand" d="M157 173 L157 108 L160 94 L163 108 L163 173 Z" /></g>
       <g data-hand="minute" data-opening-hand={opening ? 'minute' : undefined} transform={`rotate(${time.minute} 160 160)`}><path className="clock-minute-hand" d="M158 179 L158 81 L160 65 L162 81 L162 179 Z" /></g>
-      <g data-hand="second" data-opening-hand={opening ? 'second' : undefined} transform={`rotate(${time.second} 160 160)`}><line className="clock-second-hand" x1="160" y1="55" x2="160" y2="188" /><circle className="clock-counterweight" cx="160" cy="183" r="3" /></g>
+      <g data-hand="second" data-opening-hand={opening ? 'second' : undefined} transform={`rotate(${time.second} 160 160)`}>{opening && <line className="opening-second-trail" x1="160" y1="55" x2="160" y2="160" transform="rotate(7 160 160)" />}<line className="clock-second-hand" x1="160" y1="55" x2="160" y2="188" /><circle className="clock-counterweight" cx="160" cy="183" r="3" /></g>
       <circle className="clock-pin" cx="160" cy="160" r="5" />
       <circle className="clock-pin-core" cx="160" cy="160" r="1.6" />
     </g>

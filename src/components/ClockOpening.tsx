@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'motion/react'
 import ClockFace, { clockTime } from './ClockFace'
-import { profile } from '../content'
 import { useMotionPreference } from '../useMotionPreference'
 import './clock-opening.css'
 
@@ -10,7 +9,6 @@ export default function ClockOpening({ onComplete }: { onComplete: () => void })
   const [time] = useState(() => clockTime(Date.now()))
   const layer = useRef<HTMLDivElement>(null)
   const clock = useRef<SVGSVGElement>(null)
-  const skip = useRef<HTMLButtonElement>(null)
   const leaving = useRef(false)
   const turn = useRef(0)
   const reduced = useMotionPreference()
@@ -43,7 +41,7 @@ export default function ClockOpening({ onComplete }: { onComplete: () => void })
   }, [phase, reduced, onComplete, time])
 
   useEffect(() => {
-    skip.current?.focus({ preventScroll: true })
+    layer.current?.focus({ preventScroll: true })
     const leave = () => {
       if (leaving.current) return
       leaving.current = true
@@ -59,7 +57,7 @@ export default function ClockOpening({ onComplete }: { onComplete: () => void })
     const keyboard = (event: KeyboardEvent) => {
       if (event.key === 'Tab') {
         event.preventDefault()
-        skip.current?.focus({ preventScroll: true })
+        leave()
       } else if (['Escape', 'ArrowDown', 'PageDown', ' ', 'End'].includes(event.key)) {
         event.preventDefault()
         leave()
@@ -80,13 +78,7 @@ export default function ClockOpening({ onComplete }: { onComplete: () => void })
     }
   }, [])
 
-  return <div ref={layer} className="clock-opening" role="dialog" aria-modal="true" aria-label="Portfolio introduction" data-phase={phase}>
-    <p className="opening-name">{profile.fullName}</p>
+  return <div ref={layer} className="clock-opening" role="dialog" tabIndex={-1} aria-modal="true" aria-label="Portfolio introduction" data-phase={phase}>
     <ClockFace ref={clock} time={time} opening />
-    <button ref={skip} className="opening-skip" onClick={() => {
-      if (leaving.current) return
-      leaving.current = true
-      setPhase('forward')
-    }}>Skip intro</button>
   </div>
 }
