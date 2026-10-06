@@ -14,7 +14,7 @@ function Leaf({ maple = false }: { maple?: boolean }) {
 function Petal() {
   return <svg viewBox="0 0 24 34" fill="none" className="detail-petal">
     <path d="M12 31C3 24 0 15 4 7C6 2 10 2 12 6C14 2 18 2 20 7C24 15 21 24 12 31Z" fill="currentColor" />
-    <path d="M12 7C8 13 8 23 12 30" stroke="#fff2f0" strokeWidth="2" opacity=".7" />
+    <path d="M12 7C8 13 8 23 12 30" stroke="#f8f8f0" strokeWidth="2" opacity=".7" />
     <path d="M13 9C17 15 17 22 12 30" stroke="#a65571" opacity=".35" />
   </svg>
 }

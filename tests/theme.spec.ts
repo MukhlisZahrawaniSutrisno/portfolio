@@ -21,7 +21,7 @@ test('device changes preserve form state and leave the chosen theme unchanged', 
     await page.emulateMedia({ colorScheme: scheme });
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
     await expect(page.locator('html')).toHaveCSS('color-scheme', 'light');
-    await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#f8f8f6');
+    await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#f8f8f0');
     await expect(dialog.getByLabel('Your name')).toHaveValue('Visitor');
   }
   expect(await page.evaluate(previous => previous === document, documentHandle)).toBe(true);

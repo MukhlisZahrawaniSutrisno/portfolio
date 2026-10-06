@@ -1,12 +1,12 @@
 :root {
-  --navbar-glass: #f8f8f6e6;
-  --navbar-shadow: #20202008;
+  --navbar-glass: #f8f8f0e6;
+  --navbar-shadow: #46372108;
   scroll-padding-top: 136px;
 }
 
 :root[data-theme='dark'] {
-  --navbar-glass: #191a18e6;
-  --navbar-shadow: #00000026;
+  --navbar-glass: #463721e6;
+  --navbar-shadow: #46372126;
 }
 
 .navbar-shell {

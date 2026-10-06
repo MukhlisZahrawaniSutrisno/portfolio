@@ -17,7 +17,7 @@ export default function ThemeSwitcher() {
   useEffect(() => {
     document.documentElement.dataset.theme = preference
     document.documentElement.dataset.themePreference = preference
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', preference === 'dark' ? '#191a18' : '#f8f8f6')
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', preference === 'dark' ? '#463721' : '#f8f8f0')
   }, [preference])
 
   return <div className="theme-switcher" role="group" aria-label="Appearance">

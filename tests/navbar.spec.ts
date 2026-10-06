@@ -26,7 +26,7 @@ for (const appearance of ['Light', 'Dark'] as const) {
     const header = shell;
     await page.evaluate(() => document.fonts.ready);
     await expect(shell).toHaveAttribute('data-scrolled', 'false');
-    await expect(shell).toHaveCSS('background-color', appearance === 'Light' ? 'rgb(248, 248, 246)' : 'rgb(25, 26, 24)');
+    await expect(shell).toHaveCSS('background-color', appearance === 'Light' ? 'rgb(248, 248, 240)' : 'rgb(70, 55, 33)');
     await expect.poll(() => shell.evaluate(element => Math.round(element.getBoundingClientRect().top))).toBe(0);
     const geometry = await contentGeometry(page);
     const original = await header.evaluate(element => {

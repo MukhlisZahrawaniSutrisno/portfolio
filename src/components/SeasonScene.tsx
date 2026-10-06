@@ -27,7 +27,7 @@ function descriptors(count: number) {
 function BlossomBranch() {
   return <svg className="scene-blossom-branch" data-element="blossom-branch" viewBox="0 0 500 380" fill="none">
     <defs>
-      <radialGradient id="scene-blossom-paint"><stop stopColor="#fff3ee" /><stop offset=".62" stopColor="#edc0cc" /><stop offset="1" stopColor="#c28298" /></radialGradient>
+      <radialGradient id="scene-blossom-paint"><stop stopColor="#f8f8f0" /><stop offset=".62" stopColor="#edc0cc" /><stop offset="1" stopColor="#c28298" /></radialGradient>
       <g id="scene-blossom">
         {[0, 72, 144, 216, 288].map(angle => <ellipse key={angle} cx="0" cy="-10" rx="8" ry="12" transform={`rotate(${angle})`} fill="url(#scene-blossom-paint)" />)}
         <circle r="4" fill="#b88865" /><circle r="1.5" fill="#f5e5b8" />

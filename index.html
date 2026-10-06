@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f8f8f6" />
+    <meta name="theme-color" content="#f8f8f0" />
     <script>
       // Apply the saved preference before the page renders to avoid a theme flash.
       (() => {
@@ -15,10 +15,10 @@
         const theme = preference;
         document.documentElement.dataset.theme = theme;
         document.documentElement.dataset.themePreference = preference;
-        document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#191a18' : '#f8f8f6';
+        document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#463721' : '#f8f8f0';
       })();
     </script>
-    <style>html{background:#f8f8f6;color-scheme:light}html[data-theme="dark"]{background:#191a18;color-scheme:dark}</style>
+    <style>html{background:#f8f8f0;color-scheme:light}html[data-theme="dark"]{background:#463721;color-scheme:dark}</style>
     <meta name="description" content="Mukhlis Zahrawani Sutrisno — frontend developer and UI/UX designer based in Surabaya, Indonesia. Working with React, TypeScript, and Figma." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Mukhlis Zahrawani Sutrisno — Frontend & UI/UX</title>

@@ -3,29 +3,29 @@
   inset: 0;
   overflow: hidden;
   pointer-events: none;
-  --scene-rain: #748b98;
-  --scene-cloud: #8e9a9d;
-  --scene-lightning: #738caa;
-  --scene-branch: #85726c;
+  --scene-rain: #8b9485;
+  --scene-cloud: #a39b8b;
+  --scene-lightning: #b3aa86;
+  --scene-branch: #93836a;
   --scene-leaf-gold: #caa05d;
   --scene-leaf-rust: #b87b50;
   --scene-leaf-vein: #855b3c;
-  --scene-wind: #839782;
+  --scene-wind: #78805a;
   --scene-sun: #dcb56b;
-  --scene-sky: #afc8d3;
+  --scene-sky: #cad2ba;
 }
 
 html[data-theme='dark'] .season-scene {
-  --scene-rain: #a0bdcd;
-  --scene-cloud: #667780;
-  --scene-lightning: #d0e3f6;
-  --scene-branch: #a18f84;
+  --scene-rain: #c0c6ad;
+  --scene-cloud: #8d8068;
+  --scene-lightning: #f8f8f0;
+  --scene-branch: #c0b298;
   --scene-leaf-gold: #e3b878;
   --scene-leaf-rust: #d79367;
   --scene-leaf-vein: #7b513a;
-  --scene-wind: #aec4a3;
+  --scene-wind: #bcc69e;
   --scene-sun: #c4a064;
-  --scene-sky: #688b9a;
+  --scene-sky: #939b72;
 }
 
 .scene-wet-atmosphere {
@@ -129,8 +129,8 @@ html[data-theme='dark'] .season-scene {
   width: 13px;
   height: 19px;
   border-radius: 85% 18% 65% 32%;
-  background: radial-gradient(ellipse at 28% 23%, #ffede9 5%, #e4adb9 50%, #ad728b 100%);
-  box-shadow: inset 1px 0 1px #fff6;
+  background: radial-gradient(ellipse at 28% 23%, #f8f8f0 5%, #e4adb9 50%, #ad728b 100%);
+  box-shadow: inset 1px 0 1px #f8f8f066;
   transform-origin: 50% 0;
   animation: scene-petal-tumble 5.7s ease-in-out var(--scene-delay) infinite;
 }
@@ -165,7 +165,7 @@ html[data-theme='dark'] .season-scene {
   opacity: var(--scene-alpha);
   animation: scene-wind-cross var(--scene-speed) linear var(--scene-delay) infinite;
 }
-.scene-wind-foliage i { display: block; width: 100%; height: 100%; border-radius: 100% 0 100% 0; background: linear-gradient(25deg, #6f8761, #c0cdb0); animation: scene-leaf-tumble 4s ease-in-out var(--scene-delay) infinite; }
+.scene-wind-foliage i { display: block; width: 100%; height: 100%; border-radius: 100% 0 100% 0; background: linear-gradient(25deg, #78805a, #ccd4b6); animation: scene-leaf-tumble 4s ease-in-out var(--scene-delay) infinite; }
 
 .scene-solar-glow { position: absolute; inset: 0; background: radial-gradient(ellipse at 96% 0%, color-mix(in srgb, var(--scene-sun) 22%, transparent), transparent 52%); opacity: .65; animation: scene-solar-breathe 20s ease-in-out infinite; }
 .scene-solar-disc {
