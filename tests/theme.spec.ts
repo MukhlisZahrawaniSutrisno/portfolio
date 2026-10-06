@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test('appearance offers only Light and Dark and defaults to Light on dark devices', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'dark' });
-  await page.goto('/');
+  await page.goto('/#main');
   const controls = page.getByRole('group', { name: 'Appearance', exact: true });
   await expect(controls.getByRole('button')).toHaveCount(2);
   await expect(controls.getByRole('button', { name: 'Light', exact: true })).toHaveAttribute('aria-pressed', 'true');
@@ -12,7 +12,7 @@ test('appearance offers only Light and Dark and defaults to Light on dark device
 
 test('device changes preserve form state and leave the chosen theme unchanged', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light' });
-  await page.goto('/');
+  await page.goto('/#main');
   const documentHandle = await page.evaluateHandle(() => document);
   await page.locator('#contact').getByRole('button', { name: 'Discuss a project', exact: true }).click();
   const dialog = page.getByRole('dialog');
@@ -37,7 +37,7 @@ test('device changes preserve form state and leave the chosen theme unchanged', 
 });
 
 test('appearance buttons support the keyboard without a visible theme label', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#main');
   const controls = page.getByRole('group', { name: 'Appearance', exact: true });
   await expect(controls).not.toContainText(/Tema|Theme/);
   const light = controls.getByRole('button', { name: 'Light', exact: true });
@@ -56,7 +56,7 @@ test('Light and Dark choices persist and ignore device changes', async ({ page }
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.emulateMedia({ colorScheme: 'dark' });
-  await page.goto('/');
+  await page.goto('/#main');
   const theme = page.getByRole('group', { name: 'Appearance', exact: true });
   await expect(theme.getByRole('button', { name: 'Light', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
@@ -81,7 +81,7 @@ test('Light and Dark choices persist and ignore device changes', async ({ page }
 });
 
 test('themes remain usable at narrow widths with readable forms and no decorative copy', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#main');
   await page.setViewportSize({ width: 320, height: 900 });
   const theme = page.getByRole('group', { name: 'Appearance', exact: true });
   for (const choice of ['Light', 'Dark']) {
@@ -124,7 +124,7 @@ test('blocked storage falls back safely without breaking the switcher', async ({
     Object.defineProperty(Storage.prototype, 'setItem', { value() { throw new Error('Storage unavailable'); } });
   });
   await page.emulateMedia({ colorScheme: 'dark' });
-  await page.goto('/');
+  await page.goto('/#main');
   const theme = page.getByRole('group', { name: 'Appearance', exact: true });
   await expect(theme.getByRole('button', { name: 'Light', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await theme.getByRole('button', { name: 'Dark', exact: true }).click();
@@ -136,7 +136,7 @@ test('blocked storage falls back safely without breaking the switcher', async ({
 test('saved themes apply before React loads and invalid or old System values use Light', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light' });
   await page.route(/\/src\/main\.tsx(?:\?.*)?$/, route => route.abort());
-  await page.goto('/');
+  await page.goto('/#main');
   await page.evaluate(() => localStorage.setItem('muza-theme', 'dark'));
   await page.reload();
   await expect(page.locator('#root')).toBeEmpty();

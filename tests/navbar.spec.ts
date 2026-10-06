@@ -20,7 +20,7 @@ async function contentGeometry(page: Page) {
 
 for (const appearance of ['Light', 'Dark'] as const) {
   test(`navbar floats with a readable glass surface in ${appearance} and restores at the top`, async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/#main');
     await page.getByRole('button', { name: appearance, exact: true }).click();
     const shell = page.locator('.navbar-shell');
     const header = shell;
@@ -61,7 +61,7 @@ for (const appearance of ['Light', 'Dark'] as const) {
 }
 
 test('section anchors leave their headings below the sticky navigation', async ({ page, isMobile }) => {
-  await page.goto('/');
+  await page.goto('/#main');
   // Native anchor scrolling respects the page offset without timing smooth scrolling.
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   for (const section of ['About', 'Skills']) {
@@ -83,7 +83,7 @@ test('section anchors leave their headings below the sticky navigation', async (
 
 test('mobile menu and contact remain usable from the floating navbar', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'Mobile menu is limited to narrow viewports.');
-  await page.goto('/');
+  await page.goto('/#main');
   await scrollTo(page, 600);
   await expectFloatingNavbar(page);
   await page.getByRole('button', { name: 'Open menu', exact: true }).click();
@@ -100,7 +100,7 @@ test('mobile menu and contact remain usable from the floating navbar', async ({ 
 
 test('reduced motion preserves sticky navigation without a movement transition', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/');
+  await page.goto('/#main');
   await scrollTo(page, 450);
   const shell = page.locator('.navbar-shell');
   await expect(shell).toHaveAttribute('data-scrolled', 'true');

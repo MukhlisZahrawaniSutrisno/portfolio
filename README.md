@@ -1,6 +1,6 @@
 # Mukhlis Zahrawani Sutrisno — Frontend & UI/UX Portfolio
 
-Portfolio React + TypeScript + Vite dengan intro tipografi sinematik, jam analog Surabaya, animasi Motion, showcase responsif, filter proyek, dan dialog studi kasus.
+Portfolio React + TypeScript + Vite dengan palet hitam/putih, hero tipografi, objek CSS 3D interaktif, animasi Motion, showcase responsif, filter proyek, dan dialog studi kasus.
 
 ## Menjalankan
 
@@ -34,7 +34,7 @@ Belum ada script lint yang dikonfigurasi; `npm run build` menjalankan pemeriksaa
 
 ## Personalisasi
 
-- Intro layar penuh ada di `src/components/Hero.tsx` dan `intro.css`: nama tiga baris, reveal huruf melalui mask, parallax pointer halus, serta transisi clip-path/scale saat scroll. Memakai Motion yang sudah tersedia, tanpa dependensi tambahan atau scroll hijacking. Reduced motion menampilkan nama langsung dan menonaktifkan transisi sticky; skip link langsung menuju konten. Efek musim tetap tersedia di halaman utama, sementara opening memakai bidang warna solid.
+- Opening jam ada di `src/components/ClockOpening.tsx` dan `clock-opening.css`, terpisah dari layout portfolio. Dial Romawi memakai `ClockFace.tsx` bersama jam Surabaya. Jarum mundur selama 1,8 detik, bergerak maju saat selesai atau dilewati, lalu opening memudar. Tombol Skip intro, Escape, scroll, dan swipe dapat melewatinya; reduced motion, deep link, dan reload langsung membuka halaman utama. Tes arah jarum memakai waktu virtual agar tetap akurat di browser headless.
 - Selected Work sementara disembunyikan. Ubah `showSelectedWork` menjadi `true` di `src/content.ts` untuk memulihkan showcase, tautan Work, dan tombol hero; kode proyek serta studi kasus tetap disimpan.
 - Pilih Light atau Dark melalui tombol tema di navbar. Pilihan tersimpan di browser; preferensi System lama kembali ke Light. Token warna ada di `src/theme.css`.
 - Tujuh adegan musim dipilih acak setiap 5 detik tanpa mengulang musim yang sedang aktif. `SeasonEffects.tsx` mengatur rotasi/pause; `SeasonScene.tsx` dan `season-scene.css` menggambar atmosfer berlapis; `SeasonDetails.tsx` dan `season-details.css` menempatkan detail di judul, ilustrasi, dan area skills. Tab tersembunyi menjeda timer serta animasi, dan reduced motion menonaktifkan seluruh efek.

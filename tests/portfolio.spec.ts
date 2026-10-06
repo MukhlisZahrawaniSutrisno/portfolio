@@ -10,7 +10,7 @@ async function expectNoHorizontalOverflow(page: Page) {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#main');
 });
 
 test('portfolio loads cleanly and stays within the viewport', async ({ page }) => {

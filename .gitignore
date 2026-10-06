@@ -3,4 +3,6 @@ dist/
 playwright-report/
 test-results/
 test-results-motion/
+test-results-clock/
+test-results-debug/
 .env.local

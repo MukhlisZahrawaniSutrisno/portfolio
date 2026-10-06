@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test('seasons change after 5 seconds without repeating or shifting content', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-10-05T00:00:00Z') });
   await page.clock.pauseAt(new Date('2026-10-05T00:01:00Z'));
-  await page.goto('/');
+  await page.goto('/#main');
   const effects = page.locator('.season-effects');
   await expect(effects).toHaveAttribute('data-season', /rain|dry|sakura|storm|wind|clear|autumn/);
   await expect(effects).toHaveAttribute('aria-hidden', 'true');
@@ -33,7 +33,7 @@ test('seasons change after 5 seconds without repeating or shifting content', asy
 
 test('reduced motion disables seasons immediately and restores them when allowed', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/');
+  await page.goto('/#main');
   await expect(page.locator('.season-effects')).toHaveCount(0);
   await expect(page.locator('html')).not.toHaveAttribute('data-season', /.+/);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -45,7 +45,7 @@ test('reduced motion disables seasons immediately and restores them when allowed
 
 test('hidden tabs pause effects and the seasonal timer', async ({ page }) => {
   await page.clock.install();
-  await page.goto('/');
+  await page.goto('/#main');
   const effects = page.locator('.season-effects');
   await expect(effects).toBeAttached();
   const initial = await effects.getAttribute('data-season');
@@ -83,7 +83,7 @@ test('all seven scenes render their details and remain usable in both themes', a
   });
   await page.clock.install({ time: new Date('2026-10-05T00:00:00Z') });
   await page.clock.pauseAt(new Date('2026-10-05T00:01:00Z'));
-  await page.goto('/');
+  await page.goto('/#main');
   const effects = page.locator('.season-effects');
   await expect(effects).toBeAttached();
   await page.evaluate(() => document.fonts.ready);

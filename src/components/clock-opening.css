@@ -1,0 +1,23 @@
+.clock-opening {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(20px, 4svh, 36px);
+  padding: 24px;
+  background: var(--bg);
+  color: var(--text);
+  touch-action: pan-y;
+}
+.opening-name { margin: 0; font-size: 12px; text-align: center; line-height: 1.5; color: var(--secondary); }
+.opening-clock { display: block; width: min(74vw, 58svh, 440px); height: auto; aspect-ratio: 1; flex: 0 0 auto; overflow: visible; }
+.opening-clock text { font-family: Georgia, 'Times New Roman', serif; font-size: 18px; font-weight: 400; fill: var(--text); }
+.opening-clock .clock-case { stroke: var(--line); }
+.opening-clock .clock-second-hand, .opening-clock .clock-counterweight { stroke: var(--secondary); }
+.opening-skip { min-height: 44px; padding: 10px 16px; font-size: 12px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: none; color: var(--secondary); }
+.opening-skip:hover { color: var(--text); border-color: var(--muted); }
+@media (max-height: 450px) { .clock-opening { gap: 12px; padding: 12px; } .opening-clock { width: min(50vw, 54svh); } }

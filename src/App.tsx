@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion, useSpring, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from 'motion/react'
 import { ArrowUpRight, ArrowRight, Menu, X, Plus, Code2, PenTool, MousePointer2 } from 'lucide-react'
 import Work from './components/Work'
@@ -9,8 +9,11 @@ import Skills from './components/Skills'
 import ContactLinks from './components/ContactLinks'
 import ThemeSwitcher from './components/ThemeSwitcher'
 import SeasonEffects from './components/SeasonEffects'
+import ClockOpening from './components/ClockOpening'
 import { useMotionPreference } from './useMotionPreference'
 import './components/navbar.css'
+
+const isReload = () => (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined)?.type === 'reload'
 
 function ContactDialog({ dialogRef }: { dialogRef: React.RefObject<HTMLDialogElement | null> }) {
   const [notice, setNotice] = useState('')
@@ -36,6 +39,34 @@ function ContactDialog({ dialogRef }: { dialogRef: React.RefObject<HTMLDialogEle
 }
 
 export default function App() {
+  const [opening, setOpening] = useState(() =>
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+    !window.location.hash && window.scrollY === 0 && !isReload())
+  const restoreOpeningFocus = useRef(false)
+  const finishOpening = useCallback(() => {
+    restoreOpeningFocus.current = Boolean(document.activeElement?.closest('.clock-opening'))
+    setOpening(false)
+  }, [])
+  useEffect(() => {
+    if (!opening && restoreOpeningFocus.current) {
+      restoreOpeningFocus.current = false
+      document.getElementById('main')?.focus({ preventScroll: true })
+    }
+  }, [opening])
+  useEffect(() => {
+    if (window.location.hash) {
+      document.getElementById(window.location.hash.slice(1))?.scrollIntoView({ behavior: 'instant' })
+    } else if (isReload() && typeof history.state?.muzaScrollY === 'number') {
+      window.scrollTo({ top: history.state.muzaScrollY, behavior: 'instant' })
+    }
+    const savePosition = () => history.replaceState({ ...history.state, muzaScrollY: window.scrollY }, '')
+    window.addEventListener('pagehide', savePosition)
+    window.addEventListener('beforeunload', savePosition)
+    return () => {
+      window.removeEventListener('pagehide', savePosition)
+      window.removeEventListener('beforeunload', savePosition)
+    }
+  }, [])
   const [menuOpen, setMenuOpen] = useState(false)
   const [navScrolled, setNavScrolled] = useState(() => window.scrollY > 8)
   const [expanded, setExpanded] = useState<number | null>(0)
@@ -59,8 +90,9 @@ export default function App() {
   ]
   return <>
     <SeasonEffects />
+    <div className="portfolio-content" inert={opening}>
     <motion.div className="scroll-progress" style={{ scaleX: progress }} />
-    <a className="skip-link" href={showSelectedWork ? '#work' : '#about'}>Skip to content</a>
+    <a className="skip-link" href="#main">Skip to content</a>
     <motion.div className="navbar-shell" data-scrolled={navScrolled} style={{ y: reduced ? 0 : navY }}>
     <header className="header container">
       <a className="wordmark" href="#" aria-label="Muza home">Muza</a>
@@ -71,7 +103,7 @@ export default function App() {
     </header>
     <AnimatePresence>{menuOpen && <motion.nav id="mobile-nav" className="mobile-nav" aria-label="Mobile navigation" initial={reduced ? false : { opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: reduced ? 0 : .25 }}>{showSelectedWork && <a href="#work" onClick={() => setMenuOpen(false)}>Work</a>}<a href="#about" onClick={() => setMenuOpen(false)}>About</a><a href="#skills" onClick={() => setMenuOpen(false)}>Skills</a><button onClick={openContact}>Contact <ArrowUpRight /></button></motion.nav>}</AnimatePresence>
     </motion.div>
-    <main id="main">
+    <main id="main" tabIndex={-1}>
       <Hero />
       {showSelectedWork && <Work />}
       <About onContact={openContact} />
@@ -80,5 +112,7 @@ export default function App() {
       <section id="contact" className="contact"><div className="container"><div className="contact-top"><span><span className="status-dot" /> {profile.availability}</span></div><div className="contact-bottom"><button className="button light" onClick={openContact}>Discuss a project <ArrowRight size={17} /></button></div><ContactLinks /><footer><a className="footer-mark" href="#">Muza</a><a href="#">Back to top <ArrowUpRight size={12} /></a><span className="footer-year">2026</span></footer></div></section>
     </main>
     <ContactDialog dialogRef={dialogRef} />
+    </div>
+    {opening && <ClockOpening onComplete={finishOpening} />}
   </>
 }
