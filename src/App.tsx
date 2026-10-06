@@ -60,7 +60,7 @@ export default function App() {
   return <>
     <SeasonEffects />
     <motion.div className="scroll-progress" style={{ scaleX: progress }} />
-    <a className="skip-link" href="#main">Skip to content</a>
+    <a className="skip-link" href={showSelectedWork ? '#work' : '#about'}>Skip to content</a>
     <motion.div className="navbar-shell" data-scrolled={navScrolled} style={{ y: reduced ? 0 : navY }}>
     <header className="header container">
       <a className="wordmark" href="#" aria-label="Muza home">Muza</a>

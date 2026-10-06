@@ -42,20 +42,9 @@ test('headline letters enter sequentially without shifting the layout', async ({
   }
   result.before.forEach((value, index) => expect(result.after[index]).toBeCloseTo(value, 1));
   await expect(heading.locator('.headline-letter').last()).toHaveCSS('opacity', '1');
-  const loop = await heading.evaluate(element => {
-    const letter = element.querySelector<HTMLElement>('.headline-letter')!;
-    const animation = letter.getAnimations().find(animation => animation.effect?.getTiming().iterations === Infinity)!;
-    const timing = animation.effect!.getTiming();
-    animation.pause();
-    animation.currentTime = Number(timing.delay);
-    const before = element.getBoundingClientRect().toJSON();
-    const start = letter.getBoundingClientRect().y;
-    animation.currentTime = Number(timing.delay) + 500;
-    return { duration: timing.duration, before, after: element.getBoundingClientRect().toJSON(), start, middle: letter.getBoundingClientRect().y };
-  });
-  expect(loop.duration).toBe(1000);
-  expect(loop.middle).toBeLessThan(loop.start);
-  expect(loop.after).toEqual(loop.before);
+  const loops = await heading.locator('.headline-letter').evaluateAll(letters => letters.flatMap(letter => letter.getAnimations())
+    .filter(animation => animation.effect?.getTiming().iterations === Infinity).length);
+  expect(loops).toBe(0);
 });
 
 test('headline reduced motion reveals every letter immediately, including live changes', async ({ page }) => {
