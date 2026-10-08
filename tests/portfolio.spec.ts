@@ -113,6 +113,8 @@ test('contact dialog has usable fields and restores focus after Escape', async (
   const trigger = page.getByRole('button', { name: 'Discuss a project', exact: true });
   await trigger.click();
   const dialog = page.getByRole('dialog');
+
+  
   await expect(dialog).toBeVisible();
   await dialog.getByLabel(/name/i).fill('Portfolio visitor');
   await dialog.getByLabel(/email/i).fill('visitor@example.com');

@@ -35,11 +35,37 @@ test('clock reverses on arrival, advances on departure, and restores the origina
 });
 
 test('opening completes automatically without user interaction', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-10-06T03:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-10-06T03:00:01Z'));
   await page.goto('/');
   await expect(opening(page)).toBeVisible();
-  await expect(opening(page)).toHaveAttribute('data-phase', 'forward', { timeout: 2500 });
-  await expect(opening(page)).toHaveCount(0, { timeout: 1500 });
+  await page.clock.runFor(3000);
+  await expect(opening(page)).toBeVisible();
+  await expect(opening(page)).toHaveAttribute('data-phase', 'forward');
+  await page.clock.runFor(1500);
+  await expect(opening(page)).toHaveCount(0);
   await expect(page.locator('.hero.container')).toBeVisible();
+});
+
+test('the full name reveals letter by letter before entering the portfolio', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-10-06T03:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-10-06T03:00:01Z'));
+  await page.goto('/');
+  await expect(opening(page).getByRole('img', { name: 'Mukhlis Zahrawani Sutrisno' })).toBeVisible();
+  const letters = page.locator('.opening-letter');
+  await expect(letters).toHaveCount(24);
+  const sampleLetters = (time: number) => letters.evaluateAll((elements, elapsed) => elements.map(element => {
+    for (const animation of element.getAnimations()) {
+      animation.pause();
+      animation.currentTime = elapsed;
+    }
+    return Number(getComputedStyle(element).opacity);
+  }), time);
+  const midway = await sampleLetters(1400);
+  expect(midway[0]).toBeGreaterThan(0.9);
+  expect(midway.at(-1)).toBeLessThan(0.1);
+  const completed = await sampleLetters(2300);
+  expect(completed.every(opacity => opacity > 0.99)).toBe(true);
 });
 
 test('repeated scroll departure retains scroll intent and dismisses once', async ({ page, isMobile }) => {
@@ -120,15 +146,18 @@ test('reduced motion bypasses the opening and a live change dismisses immediatel
   await expect(page.locator('.portfolio-content')).not.toHaveAttribute('inert', '');
 });
 
-test('clock fits and stays centered on phones, landscape screens, and desktops', async ({ page }) => {
+test('clock and name fit phones, landscape screens, and desktops', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-10-06T03:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-10-06T03:00:01Z'));
   await page.goto('/');
   await expect(opening(page)).toBeVisible();
-  await page.screenshot({ path: `test-results/clock-opening-${test.info().project.name}.png` });
   for (const viewport of [{ width: 320, height: 568 }, { width: 667, height: 375 }, { width: 1280, height: 720 }]) {
     await page.setViewportSize(viewport);
     await page.goto('/');
     const clock = await page.locator('.opening-clock').boundingBox();
-    for (const box of [clock]) {
+    const name = await page.locator('.opening-name').boundingBox();
+    const skip = await page.getByRole('button', { name: 'Skip intro' }).boundingBox();
+    for (const box of [clock, name, skip]) {
       expect(box).not.toBeNull();
       expect(box!.x).toBeGreaterThanOrEqual(0);
       expect(box!.y).toBeGreaterThanOrEqual(0);
@@ -138,5 +167,13 @@ test('clock fits and stays centered on phones, landscape screens, and desktops',
     expect(clock!.x + clock!.width / 2).toBeCloseTo(viewport.width / 2, 0);
     expect(clock!.y + clock!.height / 2).toBeCloseTo(viewport.height / 2, 0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+    await page.clock.runFor(2200);
+    await opening(page).evaluate(element => {
+      for (const animation of element.getAnimations({ subtree: true })) {
+        animation.pause();
+        animation.currentTime = 2200;
+      }
+    });
+    await page.screenshot({ path: test.info().outputPath(`time-travel-${viewport.width}x${viewport.height}.png`) });
   }
 });
